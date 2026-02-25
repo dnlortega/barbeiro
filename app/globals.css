@@ -1,26 +1,186 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@plugin "tailwindcss-animate";
 
-@theme inline {
+@custom-variant dark (&:is(.dark *));
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  :root {
+    --background: #fafafa;
+    --foreground: #0a0a0a;
+    --card: #ffffff;
+    --card-foreground: #0a0a0a;
+    --popover: #ffffff;
+    --popover-foreground: #0a0a0a;
+    --primary: #111111;
+    /* Clean Barber Black */
+    --primary-foreground: #ffffff;
+    --secondary: #f3f3f3;
+    --secondary-foreground: #111111;
+    --muted: #f9f9f9;
+    --muted-foreground: #666666;
+    --accent: #bc8e5c;
+    /* Gold/Oak accent */
+    --accent-foreground: #ffffff;
+    --destructive: #cc0000;
+    --destructive-foreground: #ffffff;
+    --border: #eeeeee;
+    --input: #eeeeee;
+    --ring: #bc8e5c;
+    --radius: 12px;
+  }
+
+  .dark {
+    --background: #0d0d0d;
+    --foreground: #f2f2f2;
+    --card: #141414;
+    --card-foreground: #f2f2f2;
+    --popover: #141414;
+    --popover-foreground: #f2f2f2;
+    --primary: #ffffff;
+    --primary-foreground: #111111;
+    --secondary: #1a1a1a;
+    --secondary-foreground: #f2f2f2;
+    --muted: #1a1a1a;
+    --muted-foreground: #999999;
+    --accent: #bc8e5c;
+    --accent-foreground: #ffffff;
+    --destructive: #990000;
+    --destructive-foreground: #ffffff;
+    --border: #222222;
+    --input: #222222;
+    --ring: #bc8e5c;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50 font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+/* Custom Scrollbar - Hidden for premium minimalist look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* Admin and Pro Font Size adjustment */
+/* Target ONLY admin and pro layouts to avoid leaking to main site */
+.admin-layout,
+.pro-layout {
+  font-size: 10px !important;
+}
+
+/* Propagate 1rem = 10px to children ONLY inside specific layouts */
+.admin-layout *,
+.pro-layout * {
+  font-size: 1rem;
+}
+
+/* Ensure headings and inputs stay legible in shrunken layouts */
+.admin-layout h1,
+.pro-layout h1 {
+  font-size: 3rem !important;
+}
+
+.admin-layout h2,
+.pro-layout h2 {
+  font-size: 2.4rem !important;
+}
+
+.admin-layout h3,
+.pro-layout h3 {
+  font-size: 1.8rem !important;
+}
+
+/* Icons size adjustment for 10px base */
+.admin-layout svg,
+.pro-layout svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+
+/* Link and button text */
+.admin-layout button,
+.admin-layout a {
+  font-size: 1.1rem;
+}
+
+/* Reset for standard pages to ensure visibility */
+:root {
+  font-size: 16px;
 }

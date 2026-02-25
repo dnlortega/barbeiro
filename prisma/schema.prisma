@@ -1,0 +1,120 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  CUSTOMER
+  BARBER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          Role      @default(CUSTOMER)
+  
+  // Barber specific:
+  startTime     String?   // "08:00"
+  endTime       String?   // "18:00"
+  
+  // Relations
+  services      Service[] @relation("BarberServices")
+  appointmentsAsBarber Appointment[] @relation("BarberAppointments")
+  appointmentsAsCustomer Appointment[] @relation("CustomerAppointments")
+
+  accounts      Account[]
+  sessions      Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  price       Float
+  duration    Int
+  
+  barbers     User[]   @relation("BarberServices")
+  appointments Appointment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  date        DateTime
+  
+  // Customer info (guest or logged in)
+  customerId    String?
+  customerName  String?
+  customerPhone String?
+  
+  customer      User?    @relation("CustomerAppointments", fields: [customerId], references: [id])
+  
+  barberId      String
+  barber        User     @relation("BarberAppointments", fields: [barberId], references: [id])
+  
+  serviceId     String
+  service       Service  @relation(fields: [serviceId], references: [id])
+  
+  status        String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model SystemSettings {
+  id             String   @id @default("default")
+  barberShopName String   @default("Barbearia Premium")
+  whatsapp       String?  @default("(11) 99999-9999")
+  address        String?  @default("Rua da Elegância, 123 - Centro")
+  darkMode       Boolean  @default(true)
+  
+  updatedAt      DateTime @updatedAt
+}
