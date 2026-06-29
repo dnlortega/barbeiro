@@ -10,11 +10,18 @@ import { toast } from "sonner"
 import { updateSettings } from "@/app/actions/settings"
 import { cn } from "@/lib/utils"
 
+const PRESET_COLORS = [
+    "#18181b", "#dc2626", "#ea580c", "#d97706", "#16a34a",
+    "#0891b2", "#2563eb", "#7c3aed", "#db2777", "#64748b",
+]
+
 type Settings = {
     name: string | null
     whatsapp: string | null
     address: string | null
     darkMode: boolean
+    primaryColor: string | null
+    autoConfirmHours: number | null
 }
 
 export function SettingsForm({ settings }: { settings: Settings | null }) {
@@ -24,6 +31,8 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
         whatsapp: settings?.whatsapp || "",
         address: settings?.address || "",
         darkMode: settings?.darkMode ?? true,
+        primaryColor: settings?.primaryColor || "",
+        autoConfirmHours: settings?.autoConfirmHours?.toString() || "",
     })
     const [isDirty, setIsDirty] = useState(false)
 
@@ -37,7 +46,11 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
         if (!form.name.trim()) { toast.error("Nome da barbearia é obrigatório"); return }
         setLoading(true)
         try {
-            const res = await updateSettings({ name: form.name, whatsapp: form.whatsapp, address: form.address, darkMode: form.darkMode })
+            const res = await updateSettings({
+                name: form.name, whatsapp: form.whatsapp, address: form.address, darkMode: form.darkMode,
+                primaryColor: form.primaryColor || undefined,
+                autoConfirmHours: form.autoConfirmHours ? parseInt(form.autoConfirmHours) : null,
+            })
             if (res.success) { toast.success("Configurações salvas!"); setIsDirty(false) }
             else toast.error(res.error || "Erro ao salvar")
         } catch { toast.error("Erro inesperado") }
@@ -88,7 +101,7 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
                 <CardHeader>
                     <CardTitle className="text-sm">Aparência</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                     <div
                         onClick={() => update("darkMode", !form.darkMode)}
                         className="flex items-center justify-between p-3 rounded-md border cursor-pointer hover:bg-muted/50 transition-colors select-none"
@@ -100,6 +113,60 @@ export function SettingsForm({ settings }: { settings: Settings | null }) {
                         <div className={cn("w-10 h-5 rounded-full relative transition-colors shrink-0", form.darkMode ? "bg-primary" : "bg-muted border")}>
                             <div className={cn("absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all duration-200", form.darkMode ? "right-0.5" : "left-0.5")} />
                         </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-sm">Cor principal da página de agendamento</Label>
+                        <div className="flex items-center gap-2 flex-wrap">
+                            {PRESET_COLORS.map(c => (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    onClick={() => update("primaryColor", c)}
+                                    className={cn(
+                                        "w-7 h-7 rounded-full border-2 transition-transform hover:scale-110",
+                                        form.primaryColor === c ? "border-foreground scale-110" : "border-transparent"
+                                    )}
+                                    style={{ backgroundColor: c }}
+                                    title={c}
+                                />
+                            ))}
+                            <input
+                                type="color"
+                                value={form.primaryColor || "#18181b"}
+                                onChange={e => update("primaryColor", e.target.value)}
+                                className="w-7 h-7 rounded-full cursor-pointer border-0 p-0 bg-transparent"
+                                title="Cor personalizada"
+                            />
+                        </div>
+                        {form.primaryColor && (
+                            <p className="text-xs text-muted-foreground">Cor selecionada: {form.primaryColor}</p>
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-sm">Automações</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-2">
+                        <Label>Confirmação automática</Label>
+                        <div className="flex items-center gap-3">
+                            <Input
+                                type="number"
+                                min="1"
+                                max="72"
+                                className="w-24"
+                                placeholder="—"
+                                value={form.autoConfirmHours}
+                                onChange={e => update("autoConfirmHours", e.target.value)}
+                            />
+                            <p className="text-sm text-muted-foreground">horas antes de confirmar automaticamente</p>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Agendamentos pendentes serão confirmados automaticamente X horas antes. Deixe vazio para desativar.
+                        </p>
                     </div>
                 </CardContent>
             </Card>

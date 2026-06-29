@@ -31,13 +31,22 @@ export async function updateSettings(data: {
     whatsapp: string
     address: string
     darkMode: boolean
+    primaryColor?: string
+    autoConfirmHours?: number | null
 }) {
     try {
         const session = await auth()
         if (!session?.user?.id) return { success: false, error: "Não autenticado" }
         await prisma.salon.update({
             where: { id: session.user.id },
-            data: { name: data.name, whatsapp: data.whatsapp, address: data.address, darkMode: data.darkMode },
+            data: {
+                name: data.name,
+                whatsapp: data.whatsapp,
+                address: data.address,
+                darkMode: data.darkMode,
+                primaryColor: data.primaryColor ?? null,
+                autoConfirmHours: data.autoConfirmHours ?? null,
+            },
         })
         revalidatePath("/admin/settings")
         revalidatePath("/")

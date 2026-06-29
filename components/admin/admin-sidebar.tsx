@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { Scissors, CalendarDays, Shield, LayoutDashboard, Settings, Users, LogOut, Menu, ListOrdered, Store, Package, Clock, UserSearch, BarChart2, ClipboardList } from "lucide-react"
+import { Scissors, CalendarDays, Shield, LayoutDashboard, Settings, Users, LogOut, Menu, ListOrdered, Store, Package, Clock, UserSearch, BarChart2, ClipboardList, ShieldX, Boxes, Percent } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -21,6 +21,9 @@ const baseNavItems = [
     { name: "Clientes", href: "/admin/clients", icon: UserSearch, adminOnly: false },
     { name: "Relatórios", href: "/admin/report", icon: BarChart2, adminOnly: false },
     { name: "Comanda", href: "/admin/comanda", icon: ClipboardList, adminOnly: false },
+    { name: "Comissões", href: "/admin/commissions", icon: Percent, adminOnly: false },
+    { name: "Estoque", href: "/admin/stock", icon: Boxes, adminOnly: false },
+    { name: "Lista Negra", href: "/admin/blacklist", icon: ShieldX, adminOnly: false },
     { name: "Salões", href: "/admin/salons", icon: Store, adminOnly: true },
     { name: "Configurações", href: "/admin/settings", icon: Settings, adminOnly: false },
 ]

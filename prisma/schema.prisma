@@ -9,25 +9,30 @@ datasource db {
 
 // ── Salon: entidade principal autenticada ──────────────────────────────────
 model Salon {
-  id           String        @id @default(cuid())
-  name         String
-  slug         String        @unique
-  email        String        @unique
-  password     String
-  whatsapp     String?
-  address      String?
-  darkMode     Boolean       @default(true)
-  isAdmin      Boolean       @default(false)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  barbers        Barber[]
-  services       Service[]
-  appointments   Appointment[]
-  waitList       WaitList[]
-  closedDates    ClosedDate[]
-  packages       Package[]
-  clientPackages ClientPackage[]
-  timeBlocks     TimeBlock[]
+  id                String        @id @default(cuid())
+  name              String
+  slug              String        @unique
+  email             String        @unique
+  password          String
+  whatsapp          String?
+  address           String?
+  darkMode          Boolean       @default(true)
+  isAdmin           Boolean       @default(false)
+  primaryColor      String?
+  autoConfirmHours  Int?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  barbers           Barber[]
+  services          Service[]
+  appointments      Appointment[]
+  waitList          WaitList[]
+  closedDates       ClosedDate[]
+  packages          Package[]
+  clientPackages    ClientPackage[]
+  timeBlocks        TimeBlock[]
+  blacklist         BlacklistedPhone[]
+  workingHours      WorkingHours[]
+  stockItems        StockItem[]
 }
 
 // ── Barber: profissional vinculado a um salão (sem login) ──────────────────
@@ -40,6 +45,10 @@ model Barber {
   image        String?
   startTime    String?       @default("09:00")
   endTime      String?       @default("19:00")
+  commission   Float         @default(0)
+  monthlyGoal  Float?
+  bio          String?
+  isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
   services     Service[]     @relation("BarberServices")
   appointments Appointment[]
@@ -175,4 +184,55 @@ model PackageUsage {
   service         Service       @relation(fields: [serviceId], references: [id])
   usedAt          DateTime      @default(now())
   notes           String?
+}
+
+// ── BlacklistedPhone: telefones bloqueados ─────────────────────────────────
+model BlacklistedPhone {
+  id        String   @id @default(cuid())
+  salonId   String
+  salon     Salon    @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  phone     String
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([salonId, phone])
+}
+
+// ── WorkingHours: horário de funcionamento por dia da semana ───────────────
+model WorkingHours {
+  id        String  @id @default(cuid())
+  salonId   String
+  salon     Salon   @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  dayOfWeek Int
+  isOpen    Boolean @default(true)
+  openTime  String  @default("09:00")
+  closeTime String  @default("19:00")
+
+  @@unique([salonId, dayOfWeek])
+}
+
+// ── StockItem: item de estoque ─────────────────────────────────────────────
+model StockItem {
+  id           String             @id @default(cuid())
+  salonId      String
+  salon        Salon              @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  name         String
+  unit         String             @default("un")
+  quantity     Float              @default(0)
+  minQuantity  Float              @default(1)
+  costPrice    Float?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  transactions StockTransaction[]
+}
+
+// ── StockTransaction: movimentação de estoque ─────────────────────────────
+model StockTransaction {
+  id          String    @id @default(cuid())
+  stockItemId String
+  stockItem   StockItem @relation(fields: [stockItemId], references: [id], onDelete: Cascade)
+  type        String
+  quantity    Float
+  notes       String?
+  createdAt   DateTime  @default(now())
 }
