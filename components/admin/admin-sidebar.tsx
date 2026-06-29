@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { Scissors, CalendarDays, Shield, LayoutDashboard, Settings, Users, LogOut, Menu, ListOrdered, Store } from "lucide-react"
+import { Scissors, CalendarDays, Shield, LayoutDashboard, Settings, Users, LogOut, Menu, ListOrdered, Store, Package } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -15,6 +15,7 @@ const baseNavItems = [
     { name: "Agendamentos", href: "/admin/appointments", icon: CalendarDays, adminOnly: false },
     { name: "Fila de Espera", href: "/admin/waitlist", icon: ListOrdered, badgeKey: "waiting", adminOnly: false },
     { name: "Serviços", href: "/admin/services", icon: Scissors, adminOnly: false },
+    { name: "Pacotes", href: "/admin/packages", icon: Package, adminOnly: false },
     { name: "Profissionais", href: "/admin/barbers", icon: Users, adminOnly: false },
     { name: "Salões", href: "/admin/salons", icon: Store, adminOnly: true },
     { name: "Configurações", href: "/admin/settings", icon: Settings, adminOnly: false },
