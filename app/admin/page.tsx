@@ -32,11 +32,14 @@ export default async function AdminPage() {
     const salonId = session?.user?.id ?? ""
     const whereFilter = isAdmin ? undefined : { salonId }
 
+    const salonInfo = !isAdmin ? await prisma.salon.findUnique({ where: { id: salonId }, select: { name: true } }) : null
+
     const [allAppointments, services, barbers] = await Promise.all([
         prisma.appointment.findMany({
             where: whereFilter,
-            include: { service: true, barber: true },
+            include: { service: true, barber: true, salon: { select: { name: true } } },
             orderBy: { date: "desc" },
+            take: 500,
         }),
         prisma.service.findMany({ where: whereFilter, orderBy: { price: "asc" } }),
         prisma.barber.findMany({ where: whereFilter }),
@@ -197,7 +200,7 @@ export default async function AdminPage() {
                                                 <Badge className={cn("text-[11px]", st.variant)}>{st.label}</Badge>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} />
+                                                <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} status={app.status} salonName={isAdmin ? (app as typeof app & { salon?: { name: string } }).salon?.name : salonInfo?.name} />
                                             </TableCell>
                                         </TableRow>
                                     )

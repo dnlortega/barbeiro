@@ -49,7 +49,7 @@ const STATUS_LABELS: Record<string, string> = {
     NO_SHOW: "Não compareceu",
 }
 
-export function AppointmentsTable({ appointments, barbers, showSalon }: { appointments: Appointment[]; barbers: Barber[]; showSalon?: boolean }) {
+export function AppointmentsTable({ appointments, barbers, showSalon, salonName }: { appointments: Appointment[]; barbers: Barber[]; showSalon?: boolean; salonName?: string }) {
     const [search, setSearch] = useState("")
     const [statusFilter, setStatusFilter] = useState("ALL")
     const [barberFilter, setBarberFilter] = useState("ALL")
@@ -134,7 +134,7 @@ export function AppointmentsTable({ appointments, barbers, showSalon }: { appoin
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} status={app.status} />
+                                        <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} status={app.status} salonName={showSalon ? app.salon?.name : salonName} />
                                     </TableCell>
                                 </TableRow>
                             )) : (
@@ -171,7 +171,7 @@ export function AppointmentsTable({ appointments, barbers, showSalon }: { appoin
                                 <span className="font-medium text-foreground">{format(new Date(app.date), "dd/MM/yyyy 'às' HH:mm")}</span>
                             </div>
                             <div className="mt-3 flex justify-end">
-                                <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} status={app.status} />
+                                <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} status={app.status} salonName={showSalon ? app.salon?.name : salonName} />
                             </div>
                         </Card>
                     )

@@ -20,9 +20,11 @@ type Barber = { id: string; name: string | null; image?: string | null; startTim
 interface BookingWizardProps {
     salonId: string
     salonPhone?: string
+    salonAddress?: string
+    salonName?: string
 }
 
-export function BookingWizard({ salonId, salonPhone = "" }: BookingWizardProps) {
+export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", salonName = "" }: BookingWizardProps) {
     const [step, setStep] = useState(1)
     const [services, setServices] = useState<Service[]>([])
     const [barbers, setBarbers] = useState<Barber[]>([])
@@ -463,7 +465,11 @@ export function BookingWizard({ salonId, salonPhone = "" }: BookingWizardProps) 
                                     <span className="text-amber-500 text-7xl">ÀS {time}</span>
                                 </p>
                             )}
-                            <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-400 border-t-2 border-white/10 pt-8 px-10">RUA DA ELEGÂNCIA, 123 - CENTRO</p>
+                            {(salonAddress || salonName) && (
+                                <p className="text-sm font-black uppercase tracking-[0.3em] text-slate-400 border-t-2 border-white/10 pt-8 px-10">
+                                    {salonAddress || salonName}
+                                </p>
+                            )}
                         </div>
 
                         {/* Ações pós-agendamento */}

@@ -9,6 +9,8 @@ export default async function AdminAppointmentsPage() {
     const isAdmin = session?.user?.isAdmin ?? false
     const salonId = session?.user?.id ?? ""
 
+    const salonInfo = !isAdmin ? await prisma.salon.findUnique({ where: { id: salonId }, select: { name: true } }) : null
+
     const [appointments, barbers] = await Promise.all([
         prisma.appointment.findMany({
             where: isAdmin ? undefined : { salonId },
@@ -27,10 +29,10 @@ export default async function AdminAppointmentsPage() {
             <div>
                 <h1 className="text-2xl font-bold tracking-tight">Agendamentos</h1>
                 <p className="text-muted-foreground text-sm">
-                    {isAdmin ? "Todos os agendamentos de todos os salões." : "Lista completa de clientes e horários reservados."}
+                    {isAdmin ? `${appointments.length} agendamentos em todos os salões.` : `${appointments.length} agendamento${appointments.length !== 1 ? "s" : ""} registrado${appointments.length !== 1 ? "s" : ""}.`}
                 </p>
             </div>
-            <AppointmentsTable appointments={appointments} barbers={barbers} showSalon={isAdmin} />
+            <AppointmentsTable appointments={appointments} barbers={barbers} showSalon={isAdmin} salonName={salonInfo?.name} />
         </div>
     )
 }
