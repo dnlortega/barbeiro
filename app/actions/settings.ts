@@ -1,47 +1,53 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { revalidatePath } from "next/cache"
+import { auth } from "@/lib/auth"
+import { revalidatePath, unstable_noStore as noStore } from "next/cache"
 
-export async function getSettings() {
+export async function getSettings(salonId?: string) {
+    noStore()
     try {
-        let settings = await prisma.systemSettings.findFirst()
+        const id = salonId ?? (await auth())?.user?.id
+        if (!id) return null
+        return await prisma.salon.findUnique({ where: { id } })
+    } catch {
+        return null
+    }
+}
 
-        if (!settings) {
-            settings = await prisma.systemSettings.create({
-                data: {
-                    id: "default",
-                    barberShopName: "Barbearia Premium",
-                    whatsapp: "(11) 99999-9999",
-                    address: "Rua da Elegância, 123 - Centro",
-                    darkMode: true
-                }
-            })
-        }
-
-        return settings
-    } catch (error) {
-        console.error("Error fetching settings:", error)
+export async function getPublicSalon(slug?: string) {
+    try {
+        if (slug) return await prisma.salon.findUnique({ where: { slug } })
+        // fallback: primeiro salão (single-tenant)
+        return await prisma.salon.findFirst()
+    } catch {
         return null
     }
 }
 
 export async function updateSettings(data: {
-    barberShopName: string
+    barberShopName?: string
+    name?: string
     whatsapp: string
     address: string
     darkMode: boolean
 }) {
     try {
-        await prisma.systemSettings.update({
-            where: { id: "default" },
-            data
+        const session = await auth()
+        if (!session?.user?.id) return { success: false, error: "Não autenticado" }
+        await prisma.salon.update({
+            where: { id: session.user.id },
+            data: {
+                name: data.name || data.barberShopName || undefined,
+                whatsapp: data.whatsapp,
+                address: data.address,
+                darkMode: data.darkMode,
+            },
         })
         revalidatePath("/admin/settings")
         revalidatePath("/")
         return { success: true }
-    } catch (error) {
-        console.error("Error updating settings:", error)
-        return { success: false, error: "Erro ao atualizar configurações" }
+    } catch {
+        return { success: false, error: "Erro ao salvar configurações" }
     }
 }

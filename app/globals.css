@@ -138,49 +138,7 @@
   /* Firefox */
 }
 
-/* Admin and Pro Font Size adjustment */
-/* Target ONLY admin and pro layouts to avoid leaking to main site */
-.admin-layout,
-.pro-layout {
-  font-size: 10px !important;
-}
-
-/* Propagate 1rem = 10px to children ONLY inside specific layouts */
-.admin-layout *,
-.pro-layout * {
-  font-size: 1rem;
-}
-
-/* Ensure headings and inputs stay legible in shrunken layouts */
-.admin-layout h1,
-.pro-layout h1 {
-  font-size: 3rem !important;
-}
-
-.admin-layout h2,
-.pro-layout h2 {
-  font-size: 2.4rem !important;
-}
-
-.admin-layout h3,
-.pro-layout h3 {
-  font-size: 1.8rem !important;
-}
-
-/* Icons size adjustment for 10px base */
-.admin-layout svg,
-.pro-layout svg {
-  width: 1.6rem;
-  height: 1.6rem;
-}
-
-/* Link and button text */
-.admin-layout button,
-.admin-layout a {
-  font-size: 1.1rem;
-}
-
-/* Reset for standard pages to ensure visibility */
+/* Reset */
 :root {
   font-size: 16px;
 }

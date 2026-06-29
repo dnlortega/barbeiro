@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { updateAppointmentStatus, deleteAppointment } from "@/app/actions/appointments"
 import { AlertPopover } from "@/components/ui/alert-popover"
 
-export function AppointmentActions({ appointmentId, phone, name }: { appointmentId: string, phone: string | null, name: string | null }) {
+export function AppointmentActions({ appointmentId, phone, name, status }: { appointmentId: string, phone: string | null, name: string | null, status?: string }) {
 
     const handleStatus = async (status: string) => {
         const res = await updateAppointmentStatus(appointmentId, status)

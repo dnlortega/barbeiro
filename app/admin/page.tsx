@@ -1,276 +1,269 @@
 import { Metadata } from "next"
-import { redirect } from "next/navigation"
-import { auth, signOut } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import { Scissors, Clock, DollarSign, Plus, LogOut, User, Calendar as CalendarIcon, Shield, LayoutDashboard, Settings, Menu } from "lucide-react"
+import { auth } from "@/lib/auth"
+import { Scissors, Clock, DollarSign, CalendarDays, TrendingUp, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import Link from "next/link"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { AppointmentActions } from "@/components/admin/appointment-actions"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
-    title: "Admin - Barbearia Premium",
-    description: "Sistema de gerenciamento interno",
+    title: "Dashboard — Admin",
+}
+
+const STATUS_MAP: Record<string, { label: string; variant: string }> = {
+    PENDING: { label: "Pendente", variant: "bg-amber-100 text-amber-700" },
+    CONFIRMED: { label: "Confirmado", variant: "bg-emerald-100 text-emerald-700" },
+    COMPLETED: { label: "Concluído", variant: "bg-blue-100 text-blue-700" },
+    CANCELLED: { label: "Cancelado", variant: "bg-red-100 text-red-600" },
+    NO_SHOW: { label: "Não compareceu", variant: "bg-slate-100 text-slate-500" },
 }
 
 export default async function AdminPage() {
     const session = await auth()
+    const isAdmin = session?.user?.isAdmin ?? false
+    const salonId = session?.user?.id ?? ""
+    const whereFilter = isAdmin ? undefined : { salonId }
 
-    if (!session || (session.user as any).role !== "ADMIN") {
-        redirect("/login")
-    }
+    const [allAppointments, services, barbers] = await Promise.all([
+        prisma.appointment.findMany({
+            where: whereFilter,
+            include: { service: true, barber: true },
+            orderBy: { date: "desc" },
+        }),
+        prisma.service.findMany({ where: whereFilter, orderBy: { price: "asc" } }),
+        prisma.barber.findMany({ where: whereFilter }),
+    ])
 
-    // Buscar todos os serviços
-    const services = await prisma.service.findMany({
-        orderBy: { price: 'asc' }
+    const today = new Date()
+    const todayApps = allAppointments.filter(a => {
+        const d = new Date(a.date)
+        return d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
     })
-
-    // Buscar agendamentos (todos para estatísticas, mas recentes para a tabela)
-    const allAppointments = await prisma.appointment.findMany({
-        include: { service: true, barber: true },
-        orderBy: { date: 'desc' }
-    })
-
-    const recentAppointments = allAppointments.slice(0, 8)
-
-    const totalAppointments = allAppointments.length
-    const todayAppointments = allAppointments.filter(app => {
-        const today = new Date()
-        const appDate = new Date(app.date)
-        return appDate.getDate() === today.getDate() &&
-            appDate.getMonth() === today.getMonth() &&
-            appDate.getFullYear() === today.getFullYear()
-    }).length
 
     const estimatedRevenue = allAppointments
-        .filter(app => app.status === 'CONFIRMED' || app.status === 'PENDING')
-        .reduce((acc, app) => acc + app.service.price, 0)
+        .filter(a => a.status === "CONFIRMED" || a.status === "PENDING")
+        .reduce((acc, a) => acc + a.service.price, 0)
 
-    const navItems = [
-        { name: "Dashboard", href: "/admin", icon: LayoutDashboard, active: true },
-        { name: "Agendamentos", href: "/admin/appointments", icon: CalendarIcon },
-        { name: "Serviços", href: "/admin/services", icon: Scissors },
-        { name: "Profissionais", href: "/admin/barbers", icon: User },
-        { name: "Configurações", href: "/admin/settings", icon: Settings },
-    ]
+    const completedRevenue = allAppointments
+        .filter(a => a.status === "COMPLETED")
+        .reduce((acc, a) => acc + a.service.price, 0)
+
+    const recentAppointments = allAppointments.slice(0, 10)
+
+    const dayLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7)
+    const weeklyData = dayLabels.map((label, idx) => ({
+        label,
+        count: allAppointments.filter(a => new Date(a.date).getDay() === idx && new Date(a.date) >= weekAgo).length,
+    }))
+    const maxWeekly = Math.max(...weeklyData.map(d => d.count), 1)
+
+    const revenueByStatus = [
+        { label: "Pendente", status: "PENDING", color: "bg-amber-400" },
+        { label: "Confirmado", status: "CONFIRMED", color: "bg-emerald-400" },
+        { label: "Concluído", status: "COMPLETED", color: "bg-blue-400" },
+        { label: "Cancelado", status: "CANCELLED", color: "bg-red-300" },
+    ].map(s => ({
+        ...s,
+        value: allAppointments.filter(a => a.status === s.status).reduce((acc, a) => acc + a.service.price, 0),
+        count: allAppointments.filter(a => a.status === s.status).length,
+    }))
+    const maxRevenue = Math.max(...revenueByStatus.map(s => s.value), 1)
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row text-slate-900 admin-layout">
-            {/* Desktop Sidebar */}
-            <aside className="hidden md:flex w-72 bg-white border-r border-slate-200 flex-col p-8 space-y-10 fixed h-full z-20">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
-                        <Shield className="w-5 h-5 text-primary-foreground" />
-                    </div>
-                    <span className="font-black text-xl tracking-tighter uppercase whitespace-nowrap text-slate-900">
-                        Barbearia <span className="text-primary italic">CMS</span>
-                    </span>
-                </div>
+        <div className="p-4 md:p-8 space-y-6">
+            {/* Header */}
+            <div>
+                <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
+                <p className="text-muted-foreground text-sm">{format(today, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}</p>
+            </div>
 
-                <nav className="flex-grow space-y-2">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.name}
-                            href={item.href}
-                            className={cn(
-                                "flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all duration-300",
-                                item.active
-                                    ? "bg-primary text-primary-foreground shadow-xl shadow-primary/20"
-                                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-                            )}
-                        >
-                            <item.icon className="w-5 h-5" /> {item.name}
-                        </Link>
-                    ))}
-                </nav>
-
-                <div className="pt-10 border-t border-slate-100 space-y-4">
-                    <div className="flex items-center gap-3 px-2">
-                        <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-black text-primary">
-                            {session.user?.name?.charAt(0)}
-                        </div>
-                        <div className="overflow-hidden">
-                            <p className="text-sm font-black truncate text-slate-900">{session.user?.name}</p>
-                            <p className="text-[10px] uppercase font-bold text-slate-400">Administrador</p>
-                        </div>
-                    </div>
-                    <form action={async () => {
-                        'use server'
-                        await signOut()
-                    }}>
-                        <Button variant="ghost" className="w-full justify-start text-red-500 hover:bg-red-50 rounded-2xl h-12">
-                            <LogOut className="w-4 h-4 mr-2" /> Encerrar Sessão
-                        </Button>
-                    </form>
-                </div>
-            </aside>
-
-            {/* Mobile Header */}
-            <header className="md:hidden bg-white border-b border-slate-100 p-4 flex items-center justify-between sticky top-0 z-50">
-                <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-white" />
-                    </div>
-                    <span className="font-black text-xs uppercase tracking-tighter text-slate-900">Barbearia CMS</span>
-                </div>
-                <Sheet>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-slate-900"><Menu /></Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-72 p-8 flex flex-col bg-white">
-                        <SheetTitle className="mb-8 text-slate-900 font-black">Menu Administrativo</SheetTitle>
-                        <nav className="space-y-4 flex-grow">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.name}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-4 px-4 py-3 rounded-xl font-bold transition-colors",
-                                        item.active ? "text-primary" : "text-slate-500 hover:text-slate-900"
-                                    )}
-                                >
-                                    <item.icon className="w-5 h-5" /> {item.name}
-                                </Link>
-                            ))}
-                        </nav>
-                    </SheetContent>
-                </Sheet>
-            </header>
-
-            {/* Content Area */}
-            <main className="flex-grow md:ml-72 bg-slate-50">
-                <div className="p-6 md:p-12 max-w-7xl mx-auto space-y-12">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div className="space-y-1">
-                            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-slate-900">Balanço do <span className="text-primary italic">Dia</span></h2>
-                            <p className="text-slate-500 font-medium italic">Controle total das operações do dia {format(new Date(), "dd 'de' MMMM", { locale: ptBR })}</p>
-                        </div>
-                        <Button className="rounded-full h-14 px-8 font-black uppercase tracking-widest shadow-xl shadow-primary/20 bg-primary text-white">
-                            <Plus className="w-5 h-5 mr-2" /> Novo Registro
-                        </Button>
-                    </div>
-
-                    {/* Stats Horizontal */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <CardStat title="Agendas Hoje" value={todayAppointments} icon={Clock} trend={todayAppointments > 0 ? "+1" : "0"} />
-                        <CardStat title="Serviços Ativos" value={services.length} icon={Scissors} />
-                        <CardStat title="Total Agendas" value={totalAppointments} icon={CalendarIcon} />
-                        <CardStat title="Receita Prevista" value={`R$ ${estimatedRevenue.toFixed(0)}`} icon={DollarSign} color="text-emerald-600" />
-                    </div>
-
-                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-                        {/* Table Area */}
-                        <div className="xl:col-span-2 space-y-6">
-                            <div className="flex items-center justify-between px-4">
-                                <h3 className="text-xl font-black uppercase tracking-tighter text-slate-800">Agendas Recentes</h3>
-                                <Link href="/admin/appointments" className="text-xs font-black uppercase text-primary hover:underline underline-offset-4 tracking-widest">Ver Tudo</Link>
-                            </div>
-                            <div className="bg-white border border-slate-200 rounded-[2.5rem] shadow-sm overflow-hidden text-slate-900">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-slate-50 border-b border-slate-100">
-                                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Cliente / Contato</th>
-                                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Serviço Escolhido</th>
-                                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-center">Data & Horário</th>
-                                                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100">
-                                            {recentAppointments.length > 0 ? recentAppointments.map((app) => (
-                                                <tr key={app.id} className="hover:bg-slate-50/50 transition-colors">
-                                                    <td className="px-8 py-6">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className={cn(
-                                                                "w-2 h-2 rounded-full",
-                                                                app.status === 'CONFIRMED' ? "bg-emerald-500" :
-                                                                    app.status === 'PENDING' ? "bg-amber-500" : "bg-red-500"
-                                                            )} />
-                                                            <p className="font-black uppercase tracking-tighter text-sm text-slate-900">{app.customerName || "Anônimo"}</p>
-                                                        </div>
-                                                        <p className="text-[10px] font-bold text-slate-400 italic">{app.customerPhone || "Sem contato"}</p>
-                                                    </td>
-                                                    <td className="px-8 py-6">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary">
-                                                                <Scissors className="w-4 h-4" />
-                                                            </div>
-                                                            <p className="font-bold text-xs uppercase tracking-widest text-slate-700">{app.service.name}</p>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-8 py-6 text-center">
-                                                        <p className="font-black text-xs uppercase tracking-widest text-slate-900">{format(new Date(app.date), "dd/MM")}</p>
-                                                        <p className="text-[10px] font-bold text-primary italic">{format(new Date(app.date), "HH:mm")}</p>
-                                                    </td>
-                                                    <td className="px-8 py-6 text-right">
-                                                        <AppointmentActions
-                                                            appointmentId={app.id}
-                                                            phone={app.customerPhone}
-                                                            name={app.customerName}
-                                                        />
-                                                    </td>
-                                                </tr>
-                                            )) : (
-                                                <tr>
-                                                    <td colSpan={4} className="px-8 py-20 text-center text-slate-300">
-                                                        <Clock className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                                                        <p className="text-sm font-bold uppercase tracking-widest">Nenhum registro hoje</p>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
+            {/* KPIs */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                    { title: "Agendamentos hoje", value: todayApps.length, icon: CalendarDays, sub: `${allAppointments.length} total` },
+                    { title: "Serviços", value: services.length, icon: Scissors, sub: `${barbers.length} profissional${barbers.length !== 1 ? "is" : ""}` },
+                    { title: "Receita prevista", value: `R$ ${estimatedRevenue.toFixed(0)}`, icon: TrendingUp, sub: "Pendentes + Confirmados" },
+                    { title: "Receita realizada", value: `R$ ${completedRevenue.toFixed(0)}`, icon: DollarSign, sub: "Concluídos" },
+                ].map(({ title, value, icon: Icon, sub }) => (
+                    <Card key={title}>
+                        <CardHeader className="pb-2">
+                            <div className="flex items-center justify-between">
+                                <CardDescription>{title}</CardDescription>
+                                <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                                    <Icon className="w-4 h-4 text-primary" />
                                 </div>
                             </div>
-                        </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                            <p className="text-2xl font-bold tracking-tight">{value}</p>
+                            <p className="text-xs text-muted-foreground mt-1">{sub}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
 
-                        {/* Quick View Services */}
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between px-4">
-                                <h3 className="text-xl font-black uppercase tracking-tighter text-slate-800">Serviços Pro</h3>
-                            </div>
-                            <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 space-y-4 shadow-sm">
-                                {services.slice(0, 5).map(service => (
-                                    <div key={service.id} className="flex items-center justify-between p-4 rounded-2xl border border-slate-100 hover:border-primary/20 hover:bg-slate-50 transition-all group">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
-                                                <Scissors className="w-5 h-5" />
-                                            </div>
-                                            <div>
-                                                <p className="font-black uppercase tracking-tighter text-sm text-slate-900">{service.name}</p>
-                                                <p className="text-[10px] font-bold text-slate-400 italic uppercase">{service.duration} MIN</p>
-                                            </div>
-                                        </div>
-                                        <p className="font-black text-primary tracking-tighter">R$ {service.price.toFixed(0)}</p>
+            {/* Charts */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm">Agendamentos por dia</CardTitle>
+                        <CardDescription>Últimos 7 dias</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex items-end gap-2 h-28">
+                            {weeklyData.map(d => (
+                                <div key={d.label} className="flex-1 flex flex-col items-center gap-1.5">
+                                    <span className="text-[10px] font-semibold text-muted-foreground">{d.count > 0 ? d.count : ""}</span>
+                                    <div className="w-full rounded-t-sm bg-muted relative" style={{ height: "80px" }}>
+                                        <div
+                                            className="absolute bottom-0 w-full bg-primary rounded-t-sm transition-all duration-500"
+                                            style={{ height: `${Math.max((d.count / maxWeekly) * 100, d.count > 0 ? 6 : 0)}%` }}
+                                        />
                                     </div>
-                                ))}
-                                <Button variant="outline" className="w-full rounded-2xl h-12 uppercase font-black text-[10px] tracking-[0.2em] border-slate-200 text-slate-600 hover:bg-slate-50">Gerenciar Catálogo</Button>
-                            </div>
+                                    <span className="text-[10px] text-muted-foreground font-medium">{d.label}</span>
+                                </div>
+                            ))}
                         </div>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-sm">Receita por status</CardTitle>
+                        <CardDescription>Valor total em R$</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        {revenueByStatus.map(s => (
+                            <div key={s.status} className="space-y-1">
+                                <div className="flex justify-between text-xs">
+                                    <span className="text-muted-foreground">{s.label}</span>
+                                    <span className="font-semibold">R$ {s.value.toFixed(0)} <span className="font-normal text-muted-foreground">({s.count})</span></span>
+                                </div>
+                                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                    <div className={cn("h-full rounded-full transition-all duration-500", s.color)}
+                                        style={{ width: `${Math.max((s.value / maxRevenue) * 100, s.value > 0 ? 3 : 0)}%` }} />
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Recent appointments + services */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                <div className="xl:col-span-2 space-y-3">
+                    <div className="flex items-center justify-between">
+                        <h2 className="font-semibold text-sm">Agendamentos recentes</h2>
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href="/admin/appointments" className="text-xs text-primary">Ver todos</Link>
+                        </Button>
+                    </div>
+                    {/* Tabela — desktop */}
+                    <Card className="py-0 hidden sm:block">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Cliente</TableHead>
+                                    <TableHead>Serviço</TableHead>
+                                    <TableHead className="text-center">Data</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Ações</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {recentAppointments.length > 0 ? recentAppointments.map(app => {
+                                    const st = STATUS_MAP[app.status] || STATUS_MAP.PENDING
+                                    return (
+                                        <TableRow key={app.id}>
+                                            <TableCell>
+                                                <p className="font-medium text-sm">{app.customerName || "Anônimo"}</p>
+                                                <p className="text-xs text-muted-foreground">{app.customerPhone || "—"}</p>
+                                            </TableCell>
+                                            <TableCell className="text-sm">{app.service.name}</TableCell>
+                                            <TableCell className="text-center">
+                                                <p className="text-sm font-medium">{format(new Date(app.date), "dd/MM")}</p>
+                                                <p className="text-xs text-muted-foreground">{format(new Date(app.date), "HH:mm")}</p>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge className={cn("text-[11px]", st.variant)}>{st.label}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} />
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                }) : (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-10 text-muted-foreground text-sm">
+                                            <Clock className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                                            Nenhum agendamento
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </Card>
+
+                    {/* Cards — mobile */}
+                    <div className="sm:hidden space-y-2">
+                        {recentAppointments.length > 0 ? recentAppointments.map(app => {
+                            const st = STATUS_MAP[app.status] || STATUS_MAP.PENDING
+                            return (
+                                <Card key={app.id} className="p-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <p className="font-medium text-sm truncate">{app.customerName || "Anônimo"}</p>
+                                            <p className="text-xs text-muted-foreground">{app.service.name} · {format(new Date(app.date), "dd/MM HH:mm")}</p>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <Badge className={cn("text-[10px]", st.variant)}>{st.label}</Badge>
+                                            <AppointmentActions appointmentId={app.id} phone={app.customerPhone} name={app.customerName} />
+                                        </div>
+                                    </div>
+                                </Card>
+                            )
+                        }) : (
+                            <div className="py-8 text-center text-muted-foreground text-sm">
+                                <Clock className="w-6 h-6 mx-auto mb-2 opacity-20" />
+                                Nenhum agendamento
+                            </div>
+                        )}
                     </div>
                 </div>
-            </main>
-        </div>
-    )
-}
 
-function CardStat({ title, value, icon: Icon, trend, color = "text-slate-400" }: any) {
-    return (
-        <div className="bg-white border border-slate-200 p-8 rounded-[2.5rem] space-y-5 shadow-sm group hover:border-primary/20 transition-all">
-            <div className="flex justify-between items-start">
-                <div className="w-12 h-12 rounded-2xl bg-slate-50 group-hover:bg-primary/10 flex items-center justify-center text-slate-400 group-hover:text-primary transition-all">
-                    <Icon className={cn("w-6 h-6", color)} />
+                <div className="space-y-3">
+                    <h2 className="font-semibold text-sm">Serviços</h2>
+                    <Card>
+                        <CardContent className="space-y-2 pt-2">
+                            {services.slice(0, 6).map(s => (
+                                <div key={s.id} className="flex items-center justify-between py-2 border-b last:border-0">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+                                            <Scissors className="w-3.5 h-3.5 text-primary" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium">{s.name}</p>
+                                            <p className="text-[11px] text-muted-foreground">{s.duration} min</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-sm font-semibold text-primary">R$ {s.price.toFixed(0)}</span>
+                                </div>
+                            ))}
+                            <Button variant="outline" size="sm" className="w-full mt-2" asChild>
+                                <Link href="/admin/services">Gerenciar catálogo</Link>
+                            </Button>
+                        </CardContent>
+                    </Card>
                 </div>
-                {trend && (
-                    <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">{trend}</span>
-                )}
-            </div>
-            <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">{title}</p>
-                <p className="text-4xl font-black tracking-tighter italic text-slate-900">{value}</p>
             </div>
         </div>
     )
