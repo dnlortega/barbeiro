@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import { sellPackage } from "@/app/actions/packages"
+import { formatPhone } from "@/lib/utils"
 
 type Package = {
     id: string
@@ -67,7 +68,7 @@ export function SellPackageDialog({ pkg }: { pkg: Package }) {
                     </div>
                     <div className="space-y-2">
                         <Label>Telefone / WhatsApp</Label>
-                        <Input placeholder="(11) 99999-0000" value={phone} onChange={e => setPhone(e.target.value)} />
+                        <Input placeholder="(11) 99999-9999" type="tel" value={phone} onChange={e => setPhone(formatPhone(e.target.value))} />
                     </div>
                     <div className="space-y-2">
                         <Label>Validade <span className="text-muted-foreground text-xs">(opcional)</span></Label>

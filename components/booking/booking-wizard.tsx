@@ -4,7 +4,7 @@ import * as React from "react"
 import { useState, useEffect } from "react"
 import { format, isSameDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { cn } from "@/lib/utils"
+import { cn, formatPhone } from "@/lib/utils"
 import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
@@ -445,7 +445,7 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                         <label className="text-sm font-black uppercase tracking-[0.5em] px-4 text-slate-500">WHATSAPP</label>
                                         <div className="relative">
                                             <Phone className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-slate-300" />
-                                            <input type="tel" className="w-full h-24 pl-24 pr-10 font-black tracking-tighter text-4xl rounded-[2.5rem] border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="(11) 99999-9999" value={phone} onChange={(e) => setPhone(e.target.value)} />
+                                            <input type="tel" className="w-full h-24 pl-24 pr-10 font-black tracking-tighter text-4xl rounded-[2.5rem] border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="(11) 99999-9999" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} />
                                         </div>
                                     </div>
                                 </div>

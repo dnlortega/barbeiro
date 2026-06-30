@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { addToBlacklist, removeFromBlacklist } from "@/app/actions/blacklist"
+import { formatPhone } from "@/lib/utils"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
@@ -83,8 +84,9 @@ export function BlacklistManager({ initialList }: { initialList: BlacklistedPhon
                                 <Label>Telefone</Label>
                                 <Input
                                     placeholder="(11) 99999-9999"
+                                    type="tel"
                                     value={phone}
-                                    onChange={e => setPhone(e.target.value)}
+                                    onChange={e => setPhone(formatPhone(e.target.value))}
                                 />
                             </div>
                             <div className="space-y-1.5">

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
+import { formatPhone } from "@/lib/utils"
 import { addToWaitList } from "@/app/actions/waitlist"
 
 type Service = { id: string; name: string }
@@ -68,7 +69,7 @@ export function AddWaitlistDialog({ services, barbers, salonId }: {
                     </div>
                     <div className="space-y-2">
                         <Label>Telefone / WhatsApp</Label>
-                        <Input placeholder="(11) 99999-0000" value={phone} onChange={e => setPhone(e.target.value)} />
+                        <Input placeholder="(11) 99999-9999" type="tel" value={phone} onChange={e => setPhone(formatPhone(e.target.value))} />
                     </div>
                     <div className="space-y-2">
                         <Label>Serviço desejado</Label>
