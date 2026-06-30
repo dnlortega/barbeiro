@@ -3,20 +3,40 @@ import Link from "next/link"
 import { Scissors, Star, ShieldCheck, Clock, MapPin, Phone, ChevronRight, Package } from "lucide-react"
 import { prisma } from "@/lib/prisma"
 
+const DAY_NAMES_SHORT = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
+
+function formatWorkingHours(hours: { dayOfWeek: number; isOpen: boolean; openTime: string; closeTime: string }[]): string {
+    const openDays = hours.filter(h => h.isOpen)
+    if (openDays.length === 0) return "Fechado"
+    const first = openDays[0]
+    const last = openDays[openDays.length - 1]
+    const sameHours = openDays.every(d => d.openTime === first.openTime && d.closeTime === first.closeTime)
+    const dayRange = openDays.length === 1
+        ? DAY_NAMES_SHORT[first.dayOfWeek]
+        : `${DAY_NAMES_SHORT[first.dayOfWeek]} – ${DAY_NAMES_SHORT[last.dayOfWeek]}`
+    return sameHours ? `${dayRange}: ${first.openTime} às ${first.closeTime}` : `${dayRange}: ver horários`
+}
+
 export default async function Home() {
     const salons = await prisma.salon.findMany({
         where: { isAdmin: false },
-        include: { services: { where: { isCombo: false }, orderBy: { price: "asc" }, take: 3 } },
+        include: {
+            services: { where: { isCombo: false }, orderBy: { price: "asc" }, take: 3 },
+            workingHours: { orderBy: { dayOfWeek: "asc" } },
+        },
         take: 1,
         orderBy: { createdAt: "asc" },
     })
 
     const salon = salons[0]
     const featuredServices = salon?.services ?? []
+    const hoursText = salon?.workingHours?.length
+        ? formatWorkingHours(salon.workingHours)
+        : "Seg – Sáb: 09h às 18h"
 
     const contactItems = [
         { icon: MapPin, title: "Localização", desc: salon?.address || "Consulte pelo WhatsApp" },
-        { icon: Clock, title: "Horários", desc: "Seg – Sáb: 09h às 20h" },
+        { icon: Clock, title: "Horários", desc: hoursText },
         { icon: Phone, title: "Contato", desc: salon?.whatsapp || "Consulte nossas unidades" },
     ]
 

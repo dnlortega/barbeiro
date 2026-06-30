@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ShieldX, Trash2, Plus, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,6 +21,7 @@ type BlacklistedPhone = {
 }
 
 export function BlacklistManager({ initialList }: { initialList: BlacklistedPhone[] }) {
+    const router = useRouter()
     const [list, setList] = useState(initialList)
     const [open, setOpen] = useState(false)
     const [phone, setPhone] = useState("")
@@ -36,7 +38,7 @@ export function BlacklistManager({ initialList }: { initialList: BlacklistedPhon
             toast.success("Telefone bloqueado")
             setOpen(false)
             setPhone(""); setReason("")
-            window.location.reload()
+            router.refresh()
         } else {
             toast.error(res.error || "Erro")
         }

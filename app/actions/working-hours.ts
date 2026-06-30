@@ -11,6 +11,19 @@ async function getSalonId() {
     return session.user.id
 }
 
+// Pública: usada no booking wizard (sem auth)
+export async function getPublicWorkingHours(salonId: string) {
+    noStore()
+    const saved = await prisma.workingHours.findMany({
+        where: { salonId },
+        orderBy: { dayOfWeek: "asc" },
+    })
+    return Array.from({ length: 7 }, (_, i) => {
+        const found = saved.find(d => d.dayOfWeek === i)
+        return found ?? { dayOfWeek: i, isOpen: i > 0 && i < 7, openTime: "09:00", closeTime: "19:00" }
+    })
+}
+
 export async function getWorkingHours() {
     noStore()
     const salonId = await getSalonId()

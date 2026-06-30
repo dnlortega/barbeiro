@@ -2,10 +2,10 @@ import { neonConfig } from "@neondatabase/serverless"
 import { PrismaNeon } from "@prisma/adapter-neon"
 import { PrismaClient } from "@prisma/client"
 
-// WebSocket para queries no Node.js (dev local)
-if (typeof WebSocket === "undefined") {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    neonConfig.webSocketConstructor = require("ws")
+// Em Node.js (dev local) sem WebSocket nativo, injeta o polyfill
+if (typeof globalThis.WebSocket === "undefined") {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-explicit-any
+    neonConfig.webSocketConstructor = require("ws") as any
 }
 
 function createPrismaClient() {

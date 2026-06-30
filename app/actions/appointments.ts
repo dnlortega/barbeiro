@@ -69,6 +69,17 @@ export async function createAppointment(data: {
         return { success: false, error: "Não é possível agendar para uma data no passado." }
     }
 
+    // Verifica lista negra
+    if (data.customerPhone) {
+        const cleanPhone = data.customerPhone.replace(/\D/g, "")
+        const blocked = await prisma.blacklistedPhone.findUnique({
+            where: { salonId_phone: { salonId: data.salonId, phone: cleanPhone } },
+        }).catch(() => null)
+        if (blocked) {
+            return { success: false, error: "Não foi possível concluir o agendamento. Entre em contato diretamente com o salão." }
+        }
+    }
+
     const barber = await prisma.barber.findFirst({
         where: {
             id: data.barberId,

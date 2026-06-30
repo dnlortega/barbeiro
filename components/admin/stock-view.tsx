@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Package, Plus, TrendingUp, TrendingDown, AlertTriangle, ArrowUpDown, Edit2, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -23,6 +24,7 @@ type StockItem = {
 }
 
 function MovementDialog({ item }: { item: StockItem }) {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [type, setType] = useState<"IN" | "OUT" | "ADJUST">("IN")
     const [qty, setQty] = useState("")
@@ -35,7 +37,7 @@ function MovementDialog({ item }: { item: StockItem }) {
         setLoading(true)
         const res = await addStockTransaction(item.id, type, q, notes || undefined)
         setLoading(false)
-        if (res.success) { toast.success("Movimentação registrada!"); setOpen(false); setQty(""); setNotes(""); window.location.reload() }
+        if (res.success) { toast.success("Movimentação registrada!"); setOpen(false); setQty(""); setNotes(""); router.refresh() }
         else toast.error(res.error || "Erro")
     }
 
@@ -78,6 +80,7 @@ function MovementDialog({ item }: { item: StockItem }) {
 }
 
 function CreateItemDialog() {
+    const router = useRouter()
     const [open, setOpen] = useState(false)
     const [name, setName] = useState("")
     const [unit, setUnit] = useState("un")
@@ -96,7 +99,7 @@ function CreateItemDialog() {
             costPrice: costPrice ? parseFloat(costPrice) : undefined,
         })
         setLoading(false)
-        if (res.success) { toast.success("Item criado!"); setOpen(false); window.location.reload() }
+        if (res.success) { toast.success("Item criado!"); setOpen(false); router.refresh() }
         else toast.error(res.error || "Erro")
     }
 

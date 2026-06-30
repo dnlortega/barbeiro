@@ -12,6 +12,7 @@ import { Scissors, CheckCircle2, ChevronRight, ChevronLeft, Clock, Phone, Sparkl
 import { getServices, getBarbers, createAppointment, getOccupiedSlots, getBarberSlots } from "@/app/actions/appointments"
 import { addToWaitList } from "@/app/actions/waitlist"
 import { getClosedDates } from "@/app/actions/closed-dates"
+import { getPublicWorkingHours } from "@/app/actions/working-hours"
 import Link from "next/link"
 
 type Service = { id: string; name: string; price: number; duration: number }
@@ -41,17 +42,20 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
     const [name, setName] = useState("")
     const [phone, setPhone] = useState("")
     const [isWaitlist, setIsWaitlist] = useState(false)
+    const [workingHours, setWorkingHours] = useState<{ dayOfWeek: number; isOpen: boolean }[]>([])
     const shopPhone = salonPhone.replace(/\D/g, "")
 
     useEffect(() => {
         const init = async () => {
             try {
-                const [servicesData, closed] = await Promise.all([
+                const [servicesData, closed, wh] = await Promise.all([
                     getServices(salonId),
                     getClosedDates(salonId),
+                    getPublicWorkingHours(salonId),
                 ])
                 setServices(servicesData as Service[])
                 setClosedDates(closed.map(c => new Date(c.date)))
+                setWorkingHours(wh)
             } catch {
                 toast.error("Erro ao carregar dados.")
             } finally {
@@ -124,10 +128,17 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
 
     const allSlotsFull = availableSlots.length > 0 && availableSlots.every(t => occupiedSlots.includes(t))
 
-    const isDateDisabled = (d: Date) =>
-        d < new Date(new Date().setHours(0, 0, 0, 0)) ||
-        d.getDay() === 0 ||
-        closedDates.some(cd => isSameDay(cd, d))
+    const isDateDisabled = (d: Date) => {
+        if (d < new Date(new Date().setHours(0, 0, 0, 0))) return true
+        if (closedDates.some(cd => isSameDay(cd, d))) return true
+        if (workingHours.length > 0) {
+            const wh = workingHours.find(h => h.dayOfWeek === d.getDay())
+            if (wh && !wh.isOpen) return true
+        } else {
+            if (d.getDay() === 0) return true
+        }
+        return false
+    }
 
     if (loading) {
         return (
