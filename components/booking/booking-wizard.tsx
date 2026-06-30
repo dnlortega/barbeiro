@@ -167,9 +167,9 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
     }
 
     return (
-        <div className="max-w-6xl mx-auto space-y-16 pb-32 px-4 relative">
+        <div className="max-w-6xl mx-auto space-y-8 sm:space-y-16 pb-16 sm:pb-32 px-4 relative">
             {/* Step Indicators */}
-            <div className="flex justify-between items-center max-w-2xl mx-auto relative pt-12">
+            <div className="flex justify-between items-center max-w-2xl mx-auto relative pt-6 sm:pt-12">
                 <div className="absolute top-[20px] md:top-[28px] left-0 w-full h-[2px] bg-slate-300 z-0" />
                 {[1, 2, 3, 4].map((s) => (
                     <div key={s} className="relative z-10 flex flex-col items-center gap-3">
@@ -186,7 +186,7 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                 ))}
             </div>
 
-            <div className="bg-white border-8 border-black/10 rounded-[4rem] p-8 md:p-20 shadow-[0_60px_120px_-30px_rgba(0,0,0,0.2)] min-h-[600px] flex flex-col overflow-hidden relative">
+            <div className="bg-white border-4 sm:border-8 border-black/10 rounded-[2rem] sm:rounded-[4rem] p-4 sm:p-8 md:p-20 shadow-[0_60px_120px_-30px_rgba(0,0,0,0.2)] min-h-[500px] flex flex-col overflow-hidden relative">
 
                 {/* STEP 1 — Serviço */}
                 {step === 1 && (
@@ -196,26 +196,26 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 <Sparkles className="w-6 h-6 text-amber-600" />
                                 <span className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500">EXPERIÊNCIA EXCLUSIVA</span>
                             </div>
-                            <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.8]">Escolha o <br /> <span className="text-amber-600 italic">Serviço</span></h2>
+                            <h2 className="text-3xl sm:text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.85]">Escolha o <br /> <span className="text-amber-600 italic">Serviço</span></h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                             {services.map(service => (
                                 <div
                                     key={service.id}
                                     className={cn(
-                                        "group cursor-pointer p-10 rounded-[3.5rem] border-4 transition-all duration-500 relative bg-slate-100",
+                                        "group cursor-pointer p-5 sm:p-10 rounded-[2rem] sm:rounded-[3.5rem] border-4 transition-all duration-500 relative bg-slate-100",
                                         selectedService?.id === service.id ? "border-black bg-white shadow-2xl scale-[1.05]" : "border-transparent hover:border-slate-400 hover:bg-white"
                                     )}
                                     onClick={() => { setSelectedService(service); setSelectedBarber(null); setTime(null) }}
                                 >
-                                    <div className="space-y-8">
-                                        <div className={cn("w-20 h-20 rounded-3xl flex items-center justify-center transition-all duration-700", selectedService?.id === service.id ? "bg-black text-white rotate-6 shadow-xl" : "bg-white text-black border-2 border-slate-200 group-hover:bg-black group-hover:text-white group-hover:rotate-12")}>
-                                            <Scissors className="w-10 h-10" />
+                                    <div className="space-y-4 sm:space-y-8">
+                                        <div className={cn("w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center transition-all duration-700", selectedService?.id === service.id ? "bg-black text-white rotate-6 shadow-xl" : "bg-white text-black border-2 border-slate-200 group-hover:bg-black group-hover:text-white group-hover:rotate-12")}>
+                                            <Scissors className="w-7 h-7 sm:w-10 sm:h-10" />
                                         </div>
                                         <div>
-                                            <h4 className="text-3xl font-black uppercase tracking-tighter text-black mb-1">{service.name}</h4>
-                                            <p className="text-[12px] font-black uppercase tracking-widest text-slate-500 mb-6">{service.duration} Minutos</p>
-                                            <p className="text-5xl font-black tracking-tighter text-black italic">R$ {service.price.toFixed(0)}</p>
+                                            <h4 className="text-xl sm:text-3xl font-black uppercase tracking-tighter text-black mb-1">{service.name}</h4>
+                                            <p className="text-[11px] font-black uppercase tracking-widest text-slate-500 mb-3 sm:mb-6">{service.duration} Minutos</p>
+                                            <p className="text-3xl sm:text-5xl font-black tracking-tighter text-black italic">R$ {service.price.toFixed(0)}</p>
                                         </div>
                                     </div>
                                     {selectedService?.id === service.id && (
@@ -228,9 +228,9 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-auto pt-20 flex justify-end">
-                            <Button disabled={!selectedService} onClick={() => setStep(2)} className="rounded-[2.5rem] h-24 px-16 gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-xl bg-black text-white hover:bg-slate-900">
-                                Selecionar Profissional <ChevronRight className="w-8 h-8" />
+                        <div className="mt-auto pt-8 sm:pt-20 flex justify-end">
+                            <Button disabled={!selectedService} onClick={() => setStep(2)} className="rounded-[1.5rem] sm:rounded-[2.5rem] h-14 sm:h-24 px-6 sm:px-16 gap-3 sm:gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-sm sm:text-xl bg-black text-white hover:bg-slate-900">
+                                Selecionar Profissional <ChevronRight className="w-5 h-5 sm:w-8 sm:h-8" />
                             </Button>
                         </div>
                     </div>
@@ -244,9 +244,9 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 <UserIcon className="w-6 h-6 text-amber-600" />
                                 <span className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500">TIME DE ELITE</span>
                             </div>
-                            <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.8]">Seu <br /> <span className="text-amber-600 italic">Barbeiro</span></h2>
+                            <h2 className="text-3xl sm:text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.85]">Seu <br /> <span className="text-amber-600 italic">Barbeiro</span></h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-10">
                             {barbers.length > 0 ? barbers.map(barber => (
                                 <div key={barber.id}
                                     className={cn("group cursor-pointer rounded-[4.5rem] border-4 transition-all duration-700 overflow-hidden relative", selectedBarber?.id === barber.id ? "border-black shadow-2xl scale-[1.05]" : "border-transparent hover:border-slate-400 shadow-2xl shadow-slate-300")}
@@ -261,9 +261,9 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                             </div>
                                         )}
                                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent opacity-90" />
-                                        <div className="absolute bottom-0 left-0 p-12 w-full transform group-hover:-translate-y-4 transition-transform duration-500">
+                                        <div className="absolute bottom-0 left-0 p-4 sm:p-12 w-full transform group-hover:-translate-y-4 transition-transform duration-500">
                                             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-500 mb-2">MASTER BARBER</p>
-                                            <h3 className="text-4xl font-black uppercase tracking-tighter text-white drop-shadow-lg">{barber.name}</h3>
+                                            <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter text-white drop-shadow-lg">{barber.name}</h3>
                                             {barber.startTime && barber.endTime && (
                                                 <p className="text-xs text-amber-300 font-bold mt-1">{barber.startTime} – {barber.endTime}</p>
                                             )}
@@ -284,12 +284,12 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 </div>
                             )}
                         </div>
-                        <div className="mt-auto pt-20 flex justify-between items-center">
-                            <Button variant="ghost" onClick={() => setStep(1)} className="rounded-2xl h-16 px-10 gap-3 uppercase tracking-widest font-black text-sm text-slate-600 hover:text-black border-2 border-slate-200">
-                                <ChevronLeft className="w-6 h-6" /> Voltar
+                        <div className="mt-auto pt-8 sm:pt-20 flex justify-between items-center">
+                            <Button variant="ghost" onClick={() => setStep(1)} className="rounded-2xl h-12 sm:h-16 px-4 sm:px-10 gap-2 sm:gap-3 uppercase tracking-widest font-black text-xs sm:text-sm text-slate-600 hover:text-black border-2 border-slate-200">
+                                <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" /> Voltar
                             </Button>
-                            <Button disabled={!selectedBarber} onClick={() => setStep(3)} className="rounded-[2.5rem] h-24 px-16 gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-xl bg-black text-white hover:bg-slate-900">
-                                Escolher Horário <ChevronRight className="w-8 h-8" />
+                            <Button disabled={!selectedBarber} onClick={() => setStep(3)} className="rounded-[1.5rem] sm:rounded-[2.5rem] h-14 sm:h-24 px-6 sm:px-16 gap-3 sm:gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-sm sm:text-xl bg-black text-white hover:bg-slate-900">
+                                Escolher Horário <ChevronRight className="w-5 h-5 sm:w-8 sm:h-8" />
                             </Button>
                         </div>
                     </div>
@@ -303,12 +303,12 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 <Clock className="w-6 h-6 text-amber-600" />
                                 <span className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500">AGENDA EM TEMPO REAL</span>
                             </div>
-                            <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.8]">Data & <br /> <span className="text-amber-600 italic">Horário</span></h2>
+                            <h2 className="text-3xl sm:text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.85]">Data & <br /> <span className="text-amber-600 italic">Horário</span></h2>
                         </div>
 
-                        <div className="flex flex-col lg:flex-row gap-16 pt-10">
+                        <div className="flex flex-col lg:flex-row gap-6 sm:gap-16 pt-4 sm:pt-10">
                             <div className="lg:w-[450px] shrink-0">
-                                <div className="bg-slate-100 p-12 rounded-[4rem] border-4 border-slate-200 shadow-inner">
+                                <div className="bg-slate-100 p-4 sm:p-12 rounded-[2rem] sm:rounded-[4rem] border-4 border-slate-200 shadow-inner">
                                     <Calendar
                                         mode="single"
                                         selected={date}
@@ -321,12 +321,12 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                             </div>
                             <div className="flex-grow space-y-12">
                                 <div className="flex items-center gap-8 pb-8 border-b-4 border-slate-100">
-                                    <div className="w-20 h-20 rounded-[2.5rem] bg-black text-white flex items-center justify-center shadow-2xl">
-                                        <CalendarIcon className="w-10 h-10" />
+                                    <div className="w-12 h-12 sm:w-20 sm:h-20 rounded-[1.5rem] sm:rounded-[2.5rem] bg-black text-white flex items-center justify-center shadow-2xl shrink-0">
+                                        <CalendarIcon className="w-6 h-6 sm:w-10 sm:h-10" />
                                     </div>
-                                    <div className="space-y-1">
-                                        <h4 className="font-black text-lg uppercase tracking-widest text-slate-400">SELECIONADO PARA</h4>
-                                        <p className="text-4xl font-black text-black uppercase tracking-tighter italic">{date ? format(date, "EEEE, dd 'de' MMMM", { locale: ptBR }) : ""}</p>
+                                    <div className="space-y-1 min-w-0">
+                                        <h4 className="font-black text-sm sm:text-lg uppercase tracking-widest text-slate-400">SELECIONADO PARA</h4>
+                                        <p className="text-xl sm:text-4xl font-black text-black uppercase tracking-tighter italic">{date ? format(date, "EEEE, dd 'de' MMMM", { locale: ptBR }) : ""}</p>
                                     </div>
                                 </div>
 
@@ -340,7 +340,7 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                         <p className="text-slate-400 font-black uppercase tracking-widest text-sm">Selecione barbeiro e data para ver horários</p>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    <div className="grid grid-cols-3 sm:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-6">
                                         {availableSlots.map(t => {
                                             const isOccupied = occupiedSlots.includes(t)
                                             const isPast = isSlotPast(t)
@@ -348,7 +348,7 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                             return (
                                                 <Button key={t} variant={time === t ? "default" : "outline"} disabled={isDisabled} onClick={() => setTime(t)}
                                                     className={cn(
-                                                        "h-20 rounded-[2rem] font-black transition-all text-2xl tracking-tighter border-4",
+                                                        "h-14 sm:h-20 rounded-[1rem] sm:rounded-[2rem] font-black transition-all text-base sm:text-2xl tracking-tighter border-2 sm:border-4",
                                                         time === t ? "bg-black text-white border-black shadow-2xl scale-110" : "border-slate-200 bg-white text-black hover:border-black hover:bg-slate-50",
                                                         isOccupied && "opacity-20 line-through grayscale cursor-not-allowed bg-slate-200 border-transparent text-slate-500",
                                                         isPast && !isOccupied && "opacity-25 cursor-not-allowed bg-slate-100 border-transparent text-slate-400 line-through"
@@ -376,18 +376,18 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                             </div>
                         )}
 
-                        <div className="mt-auto pt-10 flex justify-between items-center">
-                            <Button variant="ghost" onClick={() => setStep(2)} className="rounded-2xl h-16 px-10 gap-3 uppercase tracking-widest font-black text-sm text-slate-600 hover:text-black border-2 border-slate-200">
-                                <ChevronLeft className="w-6 h-6" /> Voltar
+                        <div className="mt-auto pt-6 sm:pt-10 flex justify-between items-center gap-2">
+                            <Button variant="ghost" onClick={() => setStep(2)} className="rounded-2xl h-12 sm:h-16 px-3 sm:px-10 gap-2 sm:gap-3 uppercase tracking-widest font-black text-xs sm:text-sm text-slate-600 hover:text-black border-2 border-slate-200 shrink-0">
+                                <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" /> Voltar
                             </Button>
-                            <div className="flex gap-4 items-center">
+                            <div className="flex gap-2 sm:gap-4 items-center">
                                 {!allSlotsFull && availableSlots.length > 0 && (
-                                    <Button variant="outline" onClick={() => { setIsWaitlist(true); setStep(4) }} className="rounded-[2rem] h-16 px-8 gap-3 font-black uppercase tracking-widest text-sm border-2 border-amber-300 text-amber-700 hover:bg-amber-50">
-                                        <ListOrdered className="w-5 h-5" /> Fila de Espera
+                                    <Button variant="outline" onClick={() => { setIsWaitlist(true); setStep(4) }} className="rounded-[1.5rem] sm:rounded-[2rem] h-12 sm:h-16 px-3 sm:px-8 gap-2 sm:gap-3 font-black uppercase tracking-widest text-xs sm:text-sm border-2 border-amber-300 text-amber-700 hover:bg-amber-50">
+                                        <ListOrdered className="w-4 h-4 sm:w-5 sm:h-5" /> <span className="hidden sm:inline">Fila de Espera</span><span className="sm:hidden">Fila</span>
                                     </Button>
                                 )}
-                                <Button disabled={!date || !time} onClick={() => { setIsWaitlist(false); setStep(4) }} className="rounded-[2.5rem] h-24 px-16 gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-xl bg-black text-white hover:bg-slate-900">
-                                    Revisar Detalhes <ChevronRight className="w-8 h-8" />
+                                <Button disabled={!date || !time} onClick={() => { setIsWaitlist(false); setStep(4) }} className="rounded-[1.5rem] sm:rounded-[2.5rem] h-12 sm:h-24 px-4 sm:px-16 gap-2 sm:gap-6 font-black uppercase tracking-widest shadow-2xl shadow-black/30 hover:scale-105 active:scale-95 transition-all text-xs sm:text-xl bg-black text-white hover:bg-slate-900">
+                                    Revisar <ChevronRight className="w-4 h-4 sm:w-8 sm:h-8" />
                                 </Button>
                             </div>
                         </div>
@@ -402,14 +402,14 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                 {isWaitlist ? <ListOrdered className="w-6 h-6 text-amber-600" /> : <Sparkles className="w-6 h-6 text-amber-600" />}
                                 <span className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-500">{isWaitlist ? "FILA DE ESPERA" : "FINALIZAR RITUAL"}</span>
                             </div>
-                            <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.8]">Quase <br /> <span className="text-amber-600 italic">Lá</span></h2>
-                            <p className="text-slate-700 font-bold italic text-2xl max-w-xl">
+                            <h2 className="text-3xl sm:text-6xl md:text-9xl font-black uppercase tracking-tighter text-black leading-[0.8]">Quase <br /> <span className="text-amber-600 italic">Lá</span></h2>
+                            <p className="text-slate-700 font-bold italic text-lg sm:text-2xl max-w-xl">
                                 {isWaitlist ? "Deixe seus dados para entrarmos em contato quando abrir vaga." : "Confirme os detalhes para garantirmos sua vaga."}
                             </p>
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                            <div className={cn("border-4 p-14 rounded-[4.5rem] space-y-12 relative overflow-hidden shadow-inner", isWaitlist ? "bg-amber-50 border-amber-200" : "bg-slate-100 border-slate-200")}>
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-16">
+                            <div className={cn("border-2 sm:border-4 p-5 sm:p-14 rounded-[2rem] sm:rounded-[4.5rem] space-y-6 sm:space-y-12 relative overflow-hidden shadow-inner", isWaitlist ? "bg-amber-50 border-amber-200" : "bg-slate-100 border-slate-200")}>
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-black/5 rounded-full blur-3xl" />
                                 {isWaitlist && (
                                     <div className="flex items-center gap-4 bg-amber-500/10 border-2 border-amber-300 rounded-[2rem] p-6">
@@ -417,48 +417,48 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                         <p className="text-sm font-black uppercase tracking-widest text-amber-700">Você entrará na fila de espera</p>
                                     </div>
                                 )}
-                                <div className="space-y-4">
+                                <div className="space-y-2 sm:space-y-4">
                                     <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-400">SERVIÇO</p>
-                                    <h4 className="text-4xl font-black uppercase tracking-tighter text-black">{selectedService?.name}</h4>
-                                    <p className="text-xl font-bold text-amber-600 italic">R$ {selectedService?.price.toFixed(0)} • {selectedService?.duration} min</p>
+                                    <h4 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter text-black">{selectedService?.name}</h4>
+                                    <p className="text-base sm:text-xl font-bold text-amber-600 italic">R$ {selectedService?.price.toFixed(0)} • {selectedService?.duration} min</p>
                                 </div>
-                                <div className="space-y-4 pt-10 border-t-4 border-white/50">
+                                <div className="space-y-2 sm:space-y-4 pt-4 sm:pt-10 border-t-2 sm:border-t-4 border-white/50">
                                     <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-400">BARBEIRO</p>
-                                    <h4 className="text-4xl font-black uppercase tracking-tighter text-black italic leading-none">{selectedBarber?.name}</h4>
+                                    <h4 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter text-black italic leading-none">{selectedBarber?.name}</h4>
                                 </div>
-                                <div className="space-y-4 pt-10 border-t-4 border-white/50">
+                                <div className="space-y-2 sm:space-y-4 pt-4 sm:pt-10 border-t-2 sm:border-t-4 border-white/50">
                                     <p className="text-[12px] font-black uppercase tracking-[0.5em] text-slate-400">{isWaitlist ? "DATA PREFERIDA" : "AGENDAMENTO"}</p>
-                                    <h4 className="text-4xl font-black uppercase tracking-tighter text-black leading-tight">
+                                    <h4 className="text-2xl sm:text-4xl font-black uppercase tracking-tighter text-black leading-tight">
                                         {date ? format(date, "dd 'de' MMMM", { locale: ptBR }) : ""}
                                         {!isWaitlist && <><br /><span className="text-amber-600 italic">às {time}</span></>}
                                     </h4>
                                 </div>
                             </div>
 
-                            <div className="space-y-12 flex flex-col justify-center">
-                                <div className="space-y-10">
-                                    <div className="space-y-4">
+                            <div className="space-y-6 sm:space-y-12 flex flex-col justify-center">
+                                <div className="space-y-5 sm:space-y-10">
+                                    <div className="space-y-2 sm:space-y-4">
                                         <label className="text-sm font-black uppercase tracking-[0.5em] px-4 text-slate-500">SEU NOME COMPLETO</label>
-                                        <input type="text" className="w-full h-24 px-10 font-black uppercase tracking-tighter text-4xl rounded-[2.5rem] border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="Ex: FERNANDO MEIRELLES" value={name} onChange={(e) => setName(e.target.value)} />
+                                        <input type="text" className="w-full h-14 sm:h-24 px-5 sm:px-10 font-black uppercase tracking-tighter text-xl sm:text-4xl rounded-[1.5rem] sm:rounded-[2.5rem] border-2 sm:border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="Ex: FERNANDO MEIRELLES" value={name} onChange={(e) => setName(e.target.value)} />
                                     </div>
-                                    <div className="space-y-4">
+                                    <div className="space-y-2 sm:space-y-4">
                                         <label className="text-sm font-black uppercase tracking-[0.5em] px-4 text-slate-500">WHATSAPP</label>
                                         <div className="relative">
-                                            <Phone className="absolute left-10 top-1/2 -translate-y-1/2 w-8 h-8 text-slate-300" />
-                                            <input type="tel" className="w-full h-24 pl-24 pr-10 font-black tracking-tighter text-4xl rounded-[2.5rem] border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="(11) 99999-9999" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} />
+                                            <Phone className="absolute left-4 sm:left-10 top-1/2 -translate-y-1/2 w-5 h-5 sm:w-8 sm:h-8 text-slate-300" />
+                                            <input type="tel" className="w-full h-14 sm:h-24 pl-12 sm:pl-24 pr-4 sm:pr-10 font-black tracking-tighter text-xl sm:text-4xl rounded-[1.5rem] sm:rounded-[2.5rem] border-2 sm:border-4 border-slate-100 bg-slate-50 focus:bg-white focus:border-black outline-none transition-all placeholder:text-slate-300 text-black shadow-inner" placeholder="(11) 99999-9999" value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} />
                                         </div>
                                     </div>
                                 </div>
-                                <div className="space-y-8 pt-6">
-                                    <Button onClick={handleBook} disabled={!name || !phone} className={cn("w-full h-32 text-3xl font-black uppercase tracking-[0.3em] rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] active:scale-95 transition-all border-b-8", isWaitlist ? "bg-amber-500 text-white hover:bg-amber-600 border-amber-700/30" : "bg-black text-white hover:bg-slate-900 border-black/20")}>
+                                <div className="space-y-4 sm:space-y-8 pt-4 sm:pt-6">
+                                    <Button onClick={handleBook} disabled={!name || !phone} className={cn("w-full h-16 sm:h-32 text-lg sm:text-3xl font-black uppercase tracking-[0.3em] rounded-[1.5rem] sm:rounded-[3rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)] active:scale-95 transition-all border-b-4 sm:border-b-8", isWaitlist ? "bg-amber-500 text-white hover:bg-amber-600 border-amber-700/30" : "bg-black text-white hover:bg-slate-900 border-black/20")}>
                                         {isWaitlist ? "ENTRAR NA FILA" : "CONFIRMAR AGORA"}
                                     </Button>
                                     <p className="text-xs text-center text-slate-400 uppercase font-black tracking-[0.2em] leading-relaxed max-w-sm mx-auto">
                                         {isWaitlist ? "Te avisaremos pelo WhatsApp quando uma vaga abrir." : "Ao clicar, você garante sua vaga exclusiva."}
                                     </p>
                                 </div>
-                                <Button variant="ghost" onClick={() => setStep(3)} className="rounded-2xl h-16 px-10 gap-3 uppercase tracking-widest font-black text-sm text-slate-600 hover:text-black border-2 border-slate-200">
-                                    <ChevronLeft className="w-6 h-6" /> Voltar
+                                <Button variant="ghost" onClick={() => setStep(3)} className="rounded-2xl h-12 sm:h-16 px-4 sm:px-10 gap-2 sm:gap-3 uppercase tracking-widest font-black text-xs sm:text-sm text-slate-600 hover:text-black border-2 border-slate-200">
+                                    <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" /> Voltar
                                 </Button>
                             </div>
                         </div>
@@ -467,33 +467,33 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
 
                 {/* STEP 5 — Sucesso */}
                 {step === 5 && (
-                    <div className="flex-grow flex flex-col items-center justify-center text-center space-y-16 animate-in zoom-in duration-700 py-10">
-                        <div className={cn("w-56 h-56 rounded-[5rem] text-white flex items-center justify-center shadow-2xl rotate-6 border-8 border-black", isWaitlist ? "bg-amber-500" : "bg-amber-600")}>
-                            {isWaitlist ? <ListOrdered className="w-28 h-28 drop-shadow-2xl" /> : <CheckCircle2 className="w-28 h-28 drop-shadow-2xl" />}
+                    <div className="flex-grow flex flex-col items-center justify-center text-center space-y-8 sm:space-y-16 animate-in zoom-in duration-700 py-4 sm:py-10">
+                        <div className={cn("w-28 h-28 sm:w-56 sm:h-56 rounded-[3rem] sm:rounded-[5rem] text-white flex items-center justify-center shadow-2xl rotate-6 border-4 sm:border-8 border-black", isWaitlist ? "bg-amber-500" : "bg-amber-600")}>
+                            {isWaitlist ? <ListOrdered className="w-14 h-14 sm:w-28 sm:h-28 drop-shadow-2xl" /> : <CheckCircle2 className="w-14 h-14 sm:w-28 sm:h-28 drop-shadow-2xl" />}
                         </div>
-                        <div className="space-y-6">
-                            <h2 className="text-7xl md:text-[10rem] font-black uppercase tracking-tighter text-black leading-[0.8]">
+                        <div className="space-y-4 sm:space-y-6">
+                            <h2 className="text-4xl sm:text-7xl md:text-[10rem] font-black uppercase tracking-tighter text-black leading-[0.8]">
                                 {isWaitlist ? <>NA<br /><span className="text-amber-500 italic underline decoration-black/10">FILA!</span></> : <>TUDO<br /><span className="text-amber-600 italic underline decoration-black/10">PRONTO!</span></>}
                             </h2>
-                            <p className="text-3xl text-slate-800 max-w-xl mx-auto font-black italic">
+                            <p className="text-lg sm:text-3xl text-slate-800 max-w-xl mx-auto font-black italic">
                                 {isWaitlist
                                     ? <><strong>{name.split(" ")[0].toUpperCase()}</strong>, você está na fila! Te avisamos pelo WhatsApp quando abrir uma vaga.</>
                                     : <>Excelente escolha, <strong>{name.split(" ")[0].toUpperCase()}</strong>! Seu ritual está reservado.</>}
                             </p>
                         </div>
 
-                        <div className={cn("text-white p-14 rounded-[5rem] w-full max-w-xl text-center space-y-6 shadow-2xl border-x-8 border-amber-600/30", isWaitlist ? "bg-amber-700" : "bg-black")}>
+                        <div className={cn("text-white p-6 sm:p-14 rounded-[2.5rem] sm:rounded-[5rem] w-full max-w-xl text-center space-y-4 sm:space-y-6 shadow-2xl border-x-4 sm:border-x-8 border-amber-600/30", isWaitlist ? "bg-amber-700" : "bg-black")}>
                             <p className="text-[12px] font-black uppercase tracking-[0.8em] text-amber-300">{isWaitlist ? "FILA DE ESPERA" : "HORÁRIO RESERVADO"}</p>
                             {isWaitlist ? (
                                 <div className="space-y-2">
-                                    <p className="text-3xl font-black uppercase tracking-tighter italic text-white">{selectedService?.name}</p>
-                                    <p className="text-xl font-bold text-amber-300">com {selectedBarber?.name}</p>
-                                    {date && <p className="text-lg font-bold text-amber-200">Data preferida: {format(date, "dd/MM/yyyy")}</p>}
+                                    <p className="text-xl sm:text-3xl font-black uppercase tracking-tighter italic text-white">{selectedService?.name}</p>
+                                    <p className="text-base sm:text-xl font-bold text-amber-300">com {selectedBarber?.name}</p>
+                                    {date && <p className="text-sm sm:text-lg font-bold text-amber-200">Data preferida: {format(date, "dd/MM/yyyy")}</p>}
                                 </div>
                             ) : (
-                                <p className="text-6xl font-black uppercase tracking-tighter italic text-white leading-none">
+                                <p className="text-3xl sm:text-6xl font-black uppercase tracking-tighter italic text-white leading-none">
                                     {date ? format(date, "dd/MM/yyyy") : ""} <br />
-                                    <span className="text-amber-500 text-7xl">ÀS {time}</span>
+                                    <span className="text-amber-500 text-4xl sm:text-7xl">ÀS {time}</span>
                                 </p>
                             )}
                             {(salonAddress || salonName) && (
@@ -511,7 +511,7 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                         const msg = `Olá! Acabei de agendar:\n✂️ Serviço: ${selectedService?.name}\n👤 Barbeiro: ${selectedBarber?.name}\n📅 Data: ${date ? format(date, "dd/MM/yyyy") : ""}\n🕐 Horário: ${time}\n📱 Nome: ${name}`
                                         window.open(`https://wa.me/55${shopPhone}?text=${encodeURIComponent(msg)}`, "_blank")
                                     }}
-                                    className="rounded-3xl h-20 px-10 font-black uppercase tracking-widest text-sm bg-emerald-500 text-white shadow-xl hover:bg-emerald-600 gap-3"
+                                    className="rounded-3xl h-12 sm:h-20 px-4 sm:px-10 font-black uppercase tracking-widest text-xs sm:text-sm bg-emerald-500 text-white shadow-xl hover:bg-emerald-600 gap-2 sm:gap-3"
                                 >
                                     <MessageCircle className="w-5 h-5" /> Confirmar pelo WhatsApp
                                 </Button>
@@ -536,8 +536,8 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                             </div>
                         )}
 
-                        <div className="flex flex-col sm:flex-row gap-8 w-full justify-center pt-4">
-                            <Button asChild variant="outline" className="rounded-3xl h-24 px-16 font-black uppercase tracking-widest text-sm border-4 border-slate-200 hover:bg-slate-50 text-slate-800">
+                        <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 w-full justify-center pt-4">
+                            <Button asChild variant="outline" className="rounded-3xl h-14 sm:h-24 px-6 sm:px-16 font-black uppercase tracking-widest text-xs sm:text-sm border-2 sm:border-4 border-slate-200 hover:bg-slate-50 text-slate-800">
                                 <Link href="/">VOLTAR AO INÍCIO</Link>
                             </Button>
                         </div>

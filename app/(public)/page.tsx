@@ -92,11 +92,11 @@ export default async function Home() {
                             Onde a tradição encontra a modernidade para criar o seu melhor visual.
                         </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                            <Button asChild size="lg" className="rounded-full px-12 h-16 text-lg font-black tracking-widest shadow-2xl shadow-primary/40 hover:scale-105 transition-all">
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                            <Button asChild size="lg" className="rounded-full px-6 sm:px-12 h-12 sm:h-16 text-sm sm:text-lg font-black tracking-widest shadow-2xl shadow-primary/40 hover:scale-105 transition-all">
                                 <Link href="/book">AGENDAR AGORA</Link>
                             </Button>
-                            <Button asChild variant="outline" size="lg" className="rounded-full px-12 h-16 text-lg font-black tracking-widest border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all">
+                            <Button asChild variant="outline" size="lg" className="rounded-full px-6 sm:px-12 h-12 sm:h-16 text-sm sm:text-lg font-black tracking-widest border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all">
                                 <Link href="/services">VER SERVIÇOS</Link>
                             </Button>
                         </div>
@@ -141,7 +141,7 @@ export default async function Home() {
                     <div className="container px-4 mx-auto">
                         <div className="text-center mb-14 space-y-4">
                             <h2 className="text-sm font-black tracking-[0.3em] text-primary uppercase">Onde nos encontrar</h2>
-                            <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter">
+                            <h3 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tighter">
                                 Nossas <span className="text-primary italic">Unidades</span>
                             </h3>
                             <p className="text-muted-foreground max-w-xl mx-auto">
@@ -157,7 +157,7 @@ export default async function Home() {
                                 return (
                                     <div
                                         key={salon.id}
-                                        className="group relative bg-card border border-border/50 rounded-[2rem] p-8 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] animate-shimmer-in flex flex-col"
+                                        className="group relative bg-card border border-border/50 rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-8 hover:border-primary/40 transition-all duration-500 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] animate-shimmer-in flex flex-col"
                                         style={{ animationDelay: `${i * 0.12}s` }}
                                     >
                                         {/* Number badge */}
@@ -213,7 +213,7 @@ export default async function Home() {
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
                         <div className="space-y-4 max-w-xl">
                             <h2 className="text-sm font-black tracking-[0.3em] text-primary uppercase">Experiência Única</h2>
-                            <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">Nossos <span className="text-primary italic">Serviços</span></h3>
+                            <h3 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter">Nossos <span className="text-primary italic">Serviços</span></h3>
                             <p className="text-lg text-muted-foreground">Cada ritual é planejado para o máximo conforto e um resultado impecável.</p>
                         </div>
                         <Button asChild variant="link" className="text-primary font-black uppercase tracking-widest p-0 h-auto">
@@ -223,7 +223,7 @@ export default async function Home() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
                         {featuredServices.length > 0 ? featuredServices.map(service => (
-                            <div key={service.id} className="group relative p-8 md:p-10 rounded-[2.5rem] bg-card border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
+                            <div key={service.id} className="group relative p-5 sm:p-8 md:p-10 rounded-[2.5rem] bg-card border border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
                                 <div className="w-16 h-16 rounded-2xl bg-muted group-hover:bg-primary transition-colors duration-500 flex items-center justify-center mb-8">
                                     <Scissors className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors duration-500" />
                                 </div>
@@ -244,7 +244,7 @@ export default async function Home() {
                             { title: "Barba Ritual", price: "40", desc: "Toalha quente e massagem facial premium.", icon: Star },
                             { title: "Combo Completo", price: "80", desc: "Corte + barba — o pacote premium.", icon: Package },
                         ].map((service, i) => (
-                            <div key={i} className="group relative p-8 md:p-10 rounded-[2.5rem] bg-card border border-border/50 hover:border-primary/30 transition-all duration-500">
+                            <div key={i} className="group relative p-5 sm:p-8 md:p-10 rounded-[2.5rem] bg-card border border-border/50 hover:border-primary/30 transition-all duration-500">
                                 <div className="w-16 h-16 rounded-2xl bg-muted group-hover:bg-primary transition-colors duration-500 flex items-center justify-center mb-8">
                                     <service.icon className="w-8 h-8 text-primary group-hover:text-primary-foreground transition-colors duration-500" />
                                 </div>
@@ -291,7 +291,7 @@ export default async function Home() {
                         <div className="space-y-10">
                             <div className="space-y-6">
                                 <h2 className="text-sm font-black tracking-[0.3em] text-primary uppercase">Tradição & Estilo</h2>
-                                <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
+                                <h3 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
                                     Elevamos Sua <br /><span className="text-primary italic">Autoestima</span>
                                 </h3>
                                 <p className="text-xl text-muted-foreground leading-relaxed">

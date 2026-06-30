@@ -12,11 +12,11 @@ export default function AboutPage() {
                 <div className="container px-4 mx-auto relative z-10">
                     <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-left-10 duration-700">
                         <h2 className="text-sm font-black tracking-[0.4em] text-primary uppercase">Onde Estilo Encontra Tradição</h2>
-                        <h1 className="text-5xl md:text-9xl font-black uppercase tracking-tighter leading-[0.8]">
+                        <h1 className="text-3xl sm:text-5xl md:text-9xl font-black uppercase tracking-tighter leading-[0.8]">
                             Mais que um Corte, <br />
                             <span className="text-primary italic">um Ritual.</span>
                         </h1>
-                        <p className="text-xl md:text-3xl text-muted-foreground leading-relaxed max-w-3xl font-medium pt-4">
+                        <p className="text-base sm:text-xl md:text-3xl text-muted-foreground leading-relaxed max-w-3xl font-medium pt-4">
                             Desde 2012, redefinindo o conceito de barbearia clássica em um ambiente pensado exclusivamente para a experiência masculina.
                         </p>
                     </div>
@@ -60,7 +60,7 @@ export default function AboutPage() {
                                 { label: "Unidades", value: "02" }
                             ].map((stat, i) => (
                                 <div key={i} className="space-y-1">
-                                    <p className="text-4xl md:text-5xl font-black text-primary tracking-tighter italic">{stat.value}</p>
+                                    <p className="text-2xl sm:text-4xl md:text-5xl font-black text-primary tracking-tighter italic">{stat.value}</p>
                                     <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">{stat.label}</p>
                                 </div>
                             ))}
@@ -84,7 +84,7 @@ export default function AboutPage() {
                             { icon: Star, title: "Curadoria", desc: "Produtos de marcas globais selecionados para a saúde capilar masculina." },
                             { icon: Users, title: "Comunidade", desc: "Mais que clientes, formamos um círculo de homens modernos e decididos." }
                         ].map((value, i) => (
-                            <div key={i} className="group text-center space-y-6 p-8 rounded-[3rem] bg-background border border-border/50 transition-all hover:shadow-xl hover:border-primary/20">
+                            <div key={i} className="group text-center space-y-4 sm:space-y-6 p-5 sm:p-8 rounded-4xl sm:rounded-[3rem] bg-background border border-border/50 transition-all hover:shadow-xl hover:border-primary/20">
                                 <div className="w-16 h-16 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto transition-transform group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
                                     <value.icon className="w-8 h-8" />
                                 </div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
                         <div className="space-y-4">
                             <h2 className="text-sm font-black tracking-[0.4em] text-primary uppercase">Onde Estamos</h2>
-                            <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-none">Nos Encontre</h3>
+                            <h3 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-none">Nos Encontre</h3>
                         </div>
                         <Button variant="outline" className="rounded-full px-8 font-black uppercase tracking-widest flex gap-2">
                             Abrir no Maps <ChevronRight className="w-4 h-4" />
@@ -115,7 +115,7 @@ export default function AboutPage() {
                             { icon: Phone, label: "Telefone", value: "(11) 99999-9999", sub: "Disponível via WhatsApp" },
                             { icon: Mail, label: "E-mail", value: "contato@barbearia.com", sub: "Respondemos em 24h" }
                         ].map((item, i) => (
-                            <div key={i} className="p-10 rounded-[2.5rem] bg-card border border-border/50 space-y-6 hover:shadow-lg transition-all">
+                            <div key={i} className="p-5 sm:p-10 rounded-4xl sm:rounded-[2.5rem] bg-card border border-border/50 space-y-4 sm:space-y-6 hover:shadow-lg transition-all">
                                 <item.icon className="w-8 h-8 text-primary" />
                                 <div>
                                     <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">{item.label}</h4>

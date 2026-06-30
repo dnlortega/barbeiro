@@ -105,7 +105,7 @@ export function AdminSidebar({ userName, userEmail, waitingCount, isAdmin = fals
                             <Menu className="w-5 h-5" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className="w-64 p-0 flex flex-col">
+                    <SheetContent side="left" className="w-[min(256px,85vw)] p-0 flex flex-col">
                         <SheetHeader className="sr-only">
                             <SheetTitle>Menu Administrativo</SheetTitle>
                         </SheetHeader>
