@@ -210,7 +210,7 @@ export default async function Home() {
                 </div>
 
                 <div className="container px-4 mx-auto relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-16 gap-4 sm:gap-6">
                         <div className="space-y-4 max-w-xl">
                             <h2 className="text-sm font-black tracking-[0.3em] text-primary uppercase">Experiência Única</h2>
                             <h3 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter">Nossos <span className="text-primary italic">Serviços</span></h3>
@@ -294,7 +294,7 @@ export default async function Home() {
                                 <h3 className="text-2xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter leading-[0.9]">
                                     Elevamos Sua <br /><span className="text-primary italic">Autoestima</span>
                                 </h3>
-                                <p className="text-xl text-muted-foreground leading-relaxed">
+                                <p className="text-base sm:text-xl text-muted-foreground leading-relaxed">
                                     Não somos apenas uma barbearia. Somos um hub de estilo masculino onde cada corte é tratado como uma obra de arte.
                                 </p>
                             </div>
@@ -318,7 +318,7 @@ export default async function Home() {
                                 ))}
                             </div>
 
-                            <Button asChild size="lg" className="rounded-full px-12 h-16 font-black tracking-widest text-lg shadow-xl shadow-primary/20">
+                            <Button asChild size="lg" className="rounded-full px-6 sm:px-12 h-12 sm:h-16 font-black tracking-widest text-sm sm:text-lg shadow-xl shadow-primary/20">
                                 <Link href="/services">VER TODOS OS SERVIÇOS</Link>
                             </Button>
                         </div>
@@ -329,24 +329,24 @@ export default async function Home() {
             {/* CTA */}
             <section className="section-padding bg-background relative overflow-hidden">
                 <div className="container px-4 mx-auto">
-                    <div className="relative group overflow-hidden bg-primary p-12 md:p-32 rounded-[3.5rem] shadow-2xl shadow-primary/30">
+                    <div className="relative group overflow-hidden bg-primary p-6 sm:p-12 md:p-32 rounded-[2rem] sm:rounded-[3.5rem] shadow-2xl shadow-primary/30">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full -mr-48 -mt-48 blur-3xl transition-transform group-hover:scale-125 duration-1000" />
                         {/* Floating scissors in CTA */}
                         <Scissors className="absolute bottom-8 left-8 w-24 h-24 text-white/5 rotate-[30deg] pointer-events-none" />
                         <Scissors className="absolute top-8 right-24 w-16 h-16 text-white/5 rotate-[-60deg] pointer-events-none" />
-                        <div className="relative z-10 flex flex-col items-center text-center space-y-10">
-                            <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white max-w-3xl leading-[0.9]">
+                        <div className="relative z-10 flex flex-col items-center text-center space-y-6 sm:space-y-10">
+                            <h2 className="text-2xl sm:text-4xl md:text-7xl font-black uppercase tracking-tighter text-white max-w-3xl leading-[0.9]">
                                 Pronto para <br />
                                 sua <span className="italic text-black/40">Transformação?</span>
                             </h2>
-                            <p className="text-xl md:text-2xl text-white/80 max-w-xl font-medium">
+                            <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-xl font-medium">
                                 Reserve agora e garanta seu lugar com os melhores especialistas da cidade.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                                <Button asChild size="lg" variant="secondary" className="rounded-full px-16 h-20 text-xl font-black tracking-widest hover:scale-105 transition-all">
+                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                                <Button asChild size="lg" variant="secondary" className="rounded-full px-6 sm:px-16 h-12 sm:h-20 text-sm sm:text-xl font-black tracking-widest hover:scale-105 transition-all">
                                     <Link href="/book">AGENDAR AGORA</Link>
                                 </Button>
-                                <Button asChild variant="outline" size="lg" className="rounded-full px-16 h-20 text-xl font-black tracking-widest border-white/20 text-white hover:bg-white/10 transition-all">
+                                <Button asChild variant="outline" size="lg" className="rounded-full px-6 sm:px-16 h-12 sm:h-20 text-sm sm:text-xl font-black tracking-widest border-white/20 text-white hover:bg-white/10 transition-all">
                                     <Link href="/services">SERVIÇOS</Link>
                                 </Button>
                             </div>
