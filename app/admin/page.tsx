@@ -34,7 +34,10 @@ export default async function AdminPage() {
 
     const salonInfo = !isAdmin ? await prisma.salon.findUnique({ where: { id: salonId }, select: { name: true } }) : null
 
-    const [allAppointments, services, barbers] = await Promise.all([
+    const now = new Date()
+    const upcomingFilter = isAdmin ? { date: { gte: now } } : { salonId, date: { gte: now } }
+
+    const [allAppointments, services, barbers, upcomingAppointments] = await Promise.all([
         prisma.appointment.findMany({
             where: whereFilter,
             include: { service: true, barber: true, salon: { select: { name: true } } },
@@ -43,6 +46,12 @@ export default async function AdminPage() {
         }),
         prisma.service.findMany({ where: whereFilter, orderBy: { price: "asc" } }),
         prisma.barber.findMany({ where: whereFilter }),
+        prisma.appointment.findMany({
+            where: upcomingFilter,
+            include: { service: true, barber: true, salon: { select: { name: true } } },
+            orderBy: { date: "asc" },
+            take: 10,
+        }),
     ])
 
     const today = new Date()
@@ -59,7 +68,6 @@ export default async function AdminPage() {
         .filter(a => a.status === "COMPLETED")
         .reduce((acc, a) => acc + a.service.price, 0)
 
-    const recentAppointments = allAppointments.slice(0, 10)
 
     const dayLabels = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
     const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7)
@@ -165,7 +173,10 @@ export default async function AdminPage() {
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
                 <div className="xl:col-span-2 space-y-3">
                     <div className="flex items-center justify-between">
-                        <h2 className="font-semibold text-sm">Agendamentos recentes</h2>
+                        <div>
+                            <h2 className="font-semibold text-sm">Próximos agendamentos</h2>
+                            <p className="text-[11px] text-muted-foreground">A partir de agora</p>
+                        </div>
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/admin/appointments" className="text-xs text-primary">Ver todos</Link>
                         </Button>
@@ -183,7 +194,7 @@ export default async function AdminPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentAppointments.length > 0 ? recentAppointments.map(app => {
+                                {upcomingAppointments.length > 0 ? upcomingAppointments.map(app => {
                                     const st = STATUS_MAP[app.status] || STATUS_MAP.PENDING
                                     return (
                                         <TableRow key={app.id}>
@@ -208,7 +219,7 @@ export default async function AdminPage() {
                                     <TableRow>
                                         <TableCell colSpan={5} className="text-center py-10 text-muted-foreground text-sm">
                                             <Clock className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                                            Nenhum agendamento
+                                            Nenhum agendamento futuro
                                         </TableCell>
                                     </TableRow>
                                 )}
@@ -218,7 +229,7 @@ export default async function AdminPage() {
 
                     {/* Cards — mobile */}
                     <div className="sm:hidden space-y-2">
-                        {recentAppointments.length > 0 ? recentAppointments.map(app => {
+                        {upcomingAppointments.length > 0 ? upcomingAppointments.map(app => {
                             const st = STATUS_MAP[app.status] || STATUS_MAP.PENDING
                             return (
                                 <Card key={app.id} className="p-3">
@@ -237,7 +248,7 @@ export default async function AdminPage() {
                         }) : (
                             <div className="py-8 text-center text-muted-foreground text-sm">
                                 <Clock className="w-6 h-6 mx-auto mb-2 opacity-20" />
-                                Nenhum agendamento
+                                Nenhum agendamento futuro
                             </div>
                         )}
                     </div>

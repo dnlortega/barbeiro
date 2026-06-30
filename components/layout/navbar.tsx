@@ -17,8 +17,8 @@ export function Navbar({ shopName = "BARBERARIA PREMIUM" }: { shopName?: string 
     const navLinks = [
         { name: "Início", href: "/" },
         { name: "Serviços", href: "/services" },
+        { name: "Cardápio", href: "/menu" },
         { name: "Sobre", href: "/about" },
-        { name: "Agendar", href: "/book" },
     ]
 
     useEffect(() => {

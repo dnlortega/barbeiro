@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react"
 import { format, startOfDay, endOfDay, subDays, startOfMonth, endOfMonth } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { Download, Calendar, TrendingUp, DollarSign, Users, Scissors } from "lucide-react"
+import { Download, Calendar, TrendingUp, DollarSign, Users, Scissors, Printer } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -65,14 +65,20 @@ export function ReportExport({ appointments, isAdmin }: { appointments: Appointm
         const completed = filtered.filter(a => a.status === "COMPLETED")
         const revenue = completed.reduce((acc, a) => acc + a.service.price, 0)
         const clients = new Set(filtered.map(a => a.customerPhone).filter(Boolean)).size
-        const topService = (() => {
-            const counts: Record<string, number> = {}
-            completed.forEach(a => { counts[a.service.name] = (counts[a.service.name] || 0) + 1 })
-            const top = Object.entries(counts).sort((x, y) => y[1] - x[1])[0]
-            return top ? top[0] : "—"
+        const serviceBreakdown = (() => {
+            const map: Record<string, { count: number; revenue: number }> = {}
+            completed.forEach(a => {
+                if (!map[a.service.name]) map[a.service.name] = { count: 0, revenue: 0 }
+                map[a.service.name].count++
+                map[a.service.name].revenue += a.service.price
+            })
+            return Object.entries(map).sort((x, y) => y[1].count - x[1].count)
         })()
-        return { total: filtered.length, completed: completed.length, revenue, clients, topService }
+        const topService = serviceBreakdown[0]?.[0] ?? "—"
+        return { total: filtered.length, completed: completed.length, revenue, clients, topService, serviceBreakdown }
     }, [filtered])
+
+    const exportPDF = () => window.print()
 
     const exportCSV = () => {
         const header = ["Data", "Hora", "Cliente", "Telefone", "Serviço", "Valor", "Profissional", "Status", ...(isAdmin ? ["Salão"] : [])]
@@ -169,13 +175,47 @@ export function ReportExport({ appointments, isAdmin }: { appointments: Appointm
                 ))}
             </div>
 
+            {/* Breakdown por serviço */}
+            {stats.serviceBreakdown.length > 0 && (
+                <Card>
+                    <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2">
+                            <Scissors className="w-4 h-4" /> Serviços mais realizados (concluídos)
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                        {stats.serviceBreakdown.slice(0, 6).map(([name, data]) => {
+                            const pct = stats.completed > 0 ? (data.count / stats.completed) * 100 : 0
+                            return (
+                                <div key={name} className="space-y-1">
+                                    <div className="flex justify-between text-xs">
+                                        <span className="font-medium">{name}</span>
+                                        <span className="text-muted-foreground">
+                                            {data.count}x · R$ {data.revenue.toFixed(0)}
+                                        </span>
+                                    </div>
+                                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                        <div className="h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </CardContent>
+                </Card>
+            )}
+
             {/* Tabela + export */}
             <Card>
                 <CardHeader className="pb-3 flex flex-row items-center justify-between">
                     <CardTitle className="text-sm">{filtered.length} agendamento{filtered.length !== 1 ? "s" : ""}</CardTitle>
-                    <Button size="sm" onClick={exportCSV} disabled={filtered.length === 0}>
-                        <Download className="w-4 h-4 mr-1" /> Exportar CSV
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={exportPDF} disabled={filtered.length === 0}>
+                            <Printer className="w-4 h-4 mr-1" /> PDF
+                        </Button>
+                        <Button size="sm" onClick={exportCSV} disabled={filtered.length === 0}>
+                            <Download className="w-4 h-4 mr-1" /> CSV
+                        </Button>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     {/* Mobile: cards */}

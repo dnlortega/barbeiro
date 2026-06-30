@@ -45,7 +45,7 @@ export function AdminSidebar({ userName, userEmail, waitingCount, isAdmin = fals
                 </div>
 
                 {/* Nav */}
-                <nav className="flex flex-col items-center gap-1 flex-1 w-full px-2">
+                <nav className="flex flex-col items-center gap-0.5 flex-1 w-full px-2 overflow-y-auto">
                     {navItems.map(item => {
                         const active = isActive(item.href)
                         const badge = item.badgeKey === "waiting" ? waitingCount : 0
@@ -55,7 +55,7 @@ export function AdminSidebar({ userName, userEmail, waitingCount, isAdmin = fals
                                 href={item.href}
                                 title={item.name}
                                 className={cn(
-                                    "relative w-full flex items-center justify-center h-10 rounded-md transition-colors",
+                                    "relative w-full flex items-center justify-center h-9 rounded-md transition-colors",
                                     active
                                         ? "bg-primary text-primary-foreground"
                                         : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

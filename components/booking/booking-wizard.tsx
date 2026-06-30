@@ -113,6 +113,12 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
         const appointmentDate = new Date(date)
         appointmentDate.setHours(hours, minutes, 0, 0)
 
+        if (appointmentDate <= new Date()) {
+            toast.error("Esse horário já passou. Escolha um horário futuro.")
+            setTime(null)
+            return
+        }
+
         const result = await createAppointment({
             date: appointmentDate,
             serviceId: selectedService.id,
@@ -126,7 +132,18 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
         else toast.error(result.error || "Erro ao reservar.")
     }
 
-    const allSlotsFull = availableSlots.length > 0 && availableSlots.every(t => occupiedSlots.includes(t))
+    const now = new Date()
+    const isToday = date ? isSameDay(date, now) : false
+
+    const isSlotPast = (slot: string) => {
+        if (!isToday) return false
+        const [h, m] = slot.split(":").map(Number)
+        const slotTime = new Date()
+        slotTime.setHours(h, m, 0, 0)
+        return slotTime <= now
+    }
+
+    const allSlotsFull = availableSlots.length > 0 && availableSlots.every(t => occupiedSlots.includes(t) || isSlotPast(t))
 
     const isDateDisabled = (d: Date) => {
         if (d < new Date(new Date().setHours(0, 0, 0, 0))) return true
@@ -326,12 +343,15 @@ export function BookingWizard({ salonId, salonPhone = "", salonAddress = "", sal
                                     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-6">
                                         {availableSlots.map(t => {
                                             const isOccupied = occupiedSlots.includes(t)
+                                            const isPast = isSlotPast(t)
+                                            const isDisabled = isOccupied || isPast
                                             return (
-                                                <Button key={t} variant={time === t ? "default" : "outline"} disabled={isOccupied} onClick={() => setTime(t)}
+                                                <Button key={t} variant={time === t ? "default" : "outline"} disabled={isDisabled} onClick={() => setTime(t)}
                                                     className={cn(
                                                         "h-20 rounded-[2rem] font-black transition-all text-2xl tracking-tighter border-4",
                                                         time === t ? "bg-black text-white border-black shadow-2xl scale-110" : "border-slate-200 bg-white text-black hover:border-black hover:bg-slate-50",
-                                                        isOccupied && "opacity-20 line-through grayscale cursor-not-allowed bg-slate-200 border-transparent text-slate-500"
+                                                        isOccupied && "opacity-20 line-through grayscale cursor-not-allowed bg-slate-200 border-transparent text-slate-500",
+                                                        isPast && !isOccupied && "opacity-25 cursor-not-allowed bg-slate-100 border-transparent text-slate-400 line-through"
                                                     )}
                                                 >{t}</Button>
                                             )

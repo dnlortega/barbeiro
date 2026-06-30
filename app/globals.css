@@ -142,3 +142,63 @@
 :root {
   font-size: 16px;
 }
+
+/* Print styles */
+@media print {
+  aside, header, nav, .print\:hidden { display: none !important; }
+  body { background: white !important; color: black !important; }
+  .print-area { padding: 0 !important; }
+  * { box-shadow: none !important; }
+}
+
+/* Barber animations */
+@keyframes barber-float {
+  0%, 100% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); opacity: 0.12; }
+  50% { transform: translateY(-18px) rotate(calc(var(--tw-rotate, 0deg) + 8deg)); opacity: 0.22; }
+}
+@keyframes barber-float-r {
+  0%, 100% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); opacity: 0.08; }
+  50% { transform: translateY(16px) rotate(calc(var(--tw-rotate, 0deg) - 10deg)); opacity: 0.18; }
+}
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes pole-spin {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 60px; }
+}
+@keyframes shimmer-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-barber-float {
+  animation: barber-float 7s ease-in-out infinite;
+}
+.animate-barber-float-r {
+  animation: barber-float-r 9s ease-in-out infinite;
+}
+.animate-barber-float-slow {
+  animation: barber-float 11s ease-in-out infinite;
+}
+.animate-marquee-left {
+  animation: marquee-left 28s linear infinite;
+}
+.animate-shimmer-in {
+  animation: shimmer-in 0.7s ease-out both;
+}
+.barber-pole {
+  background: repeating-linear-gradient(
+    -45deg,
+    #cc0000 0px,
+    #cc0000 10px,
+    #ffffff 10px,
+    #ffffff 20px,
+    #003399 20px,
+    #003399 30px,
+    #ffffff 30px,
+    #ffffff 40px
+  );
+  animation: pole-spin 2s linear infinite;
+}

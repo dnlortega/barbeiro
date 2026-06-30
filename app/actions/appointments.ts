@@ -51,6 +51,9 @@ export async function getBarberSlots(date: Date, barberId: string, serviceDurati
     return generateTimeSlots(startTime, endTime, serviceDuration)
 }
 
+const strip = (v: string | undefined, max = 120) =>
+    v ? v.replace(/<[^>]*>/g, "").replace(/[<>"'`]/g, "").trim().slice(0, max) : undefined
+
 export async function createAppointment(data: {
     date: Date
     serviceId: string
@@ -65,13 +68,24 @@ export async function createAppointment(data: {
         return { success: false, error: "Muitos agendamentos em pouco tempo. Aguarde e tente novamente." }
     }
 
+    // Sanitizar entradas do cliente
+    const customerName = strip(data.customerName)
+    const customerPhone = strip(data.customerPhone, 20)
+
+    // Validar que o salão existe e não é admin
+    const salon = await prisma.salon.findFirst({
+        where: { id: data.salonId, isAdmin: false },
+        select: { id: true },
+    })
+    if (!salon) return { success: false, error: "Salão inválido." }
+
     if (data.date < new Date()) {
         return { success: false, error: "Não é possível agendar para uma data no passado." }
     }
 
     // Verifica lista negra
-    if (data.customerPhone) {
-        const cleanPhone = data.customerPhone.replace(/\D/g, "")
+    if (customerPhone) {
+        const cleanPhone = customerPhone.replace(/\D/g, "")
         const blocked = await prisma.blacklistedPhone.findUnique({
             where: { salonId_phone: { salonId: data.salonId, phone: cleanPhone } },
         }).catch(() => null)
@@ -84,6 +98,7 @@ export async function createAppointment(data: {
         where: {
             id: data.barberId,
             salonId: data.salonId,
+            isActive: true,
             services: { some: { id: data.serviceId } },
         },
         select: { startTime: true, endTime: true },
@@ -117,8 +132,8 @@ export async function createAppointment(data: {
                 date: data.date,
                 serviceId: data.serviceId,
                 barberId: data.barberId,
-                customerName: data.customerName,
-                customerPhone: data.customerPhone,
+                customerName,
+                customerPhone,
                 salonId: data.salonId,
                 status: "PENDING",
             },
@@ -176,9 +191,19 @@ export async function getOccupiedSlots(date: Date, barberId: string) {
     })
 }
 
+const VALID_STATUSES = ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED", "NO_SHOW"]
+
 export async function updateAppointmentStatus(id: string, status: string) {
     try {
-        await prisma.appointment.update({ where: { id }, data: { status } })
+        const session = await auth()
+        if (!session?.user?.id) return { success: false, error: "Não autorizado" }
+        if (!VALID_STATUSES.includes(status)) return { success: false, error: "Status inválido" }
+
+        const where = session.user.isAdmin
+            ? { id }
+            : { id, salonId: session.user.id }
+
+        await prisma.appointment.update({ where, data: { status } })
         revalidatePath("/admin")
         revalidatePath("/admin/appointments")
         return { success: true }
@@ -189,7 +214,14 @@ export async function updateAppointmentStatus(id: string, status: string) {
 
 export async function deleteAppointment(id: string) {
     try {
-        await prisma.appointment.delete({ where: { id } })
+        const session = await auth()
+        if (!session?.user?.id) return { success: false, error: "Não autorizado" }
+
+        const where = session.user.isAdmin
+            ? { id }
+            : { id, salonId: session.user.id }
+
+        await prisma.appointment.delete({ where })
         revalidatePath("/admin")
         revalidatePath("/admin/appointments")
         return { success: true }
